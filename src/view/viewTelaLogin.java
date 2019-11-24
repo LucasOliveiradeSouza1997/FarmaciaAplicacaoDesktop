@@ -7,6 +7,9 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import model.DAO.UsuarioDAO;
+
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -76,7 +79,8 @@ public class viewTelaLogin {
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				if (confereLogin(txtLogin.getText(), new String(txtPassword.getPassword()))) {
+				UsuarioDAO usuarioDAO = new UsuarioDAO();
+				if (usuarioDAO.confereLogin(txtLogin.getText(), new String(txtPassword.getPassword()))) {
 					JOptionPane.showMessageDialog(null, "Logou");
 				}else{
 					JOptionPane.showMessageDialog(null, "Dados inválidos");
@@ -89,9 +93,5 @@ public class viewTelaLogin {
 		txtPassword = new JPasswordField();
 		txtPassword.setBounds(93, 75, 223, 23);
 		frame.getContentPane().add(txtPassword);
-	}
-	
-	public boolean confereLogin(String login, String senha) {
-		return login.equals("lucas") && senha.equals("123");
 	}
 }
