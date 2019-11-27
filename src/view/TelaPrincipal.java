@@ -1,20 +1,18 @@
 package view;
 
-import java.awt.BorderLayout;
 import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JButton;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JDesktopPane;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
-public class telaPrincipal extends JFrame {
+public class TelaPrincipal extends JFrame {
 
 	private JPanel contentPane;
 
@@ -25,7 +23,9 @@ public class telaPrincipal extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					telaPrincipal frame = new telaPrincipal();
+					TelaPrincipal frame = new TelaPrincipal();
+					frame.setResizable(false);
+					frame.setLocationRelativeTo(null);
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -37,7 +37,7 @@ public class telaPrincipal extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public telaPrincipal() {
+	public TelaPrincipal() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		
@@ -50,7 +50,7 @@ public class telaPrincipal extends JFrame {
 		JMenuItem mntmCadastrarCliente = new JMenuItem("Cadastrar cliente");
 		mntmCadastrarCliente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				viewTelaCadastroClienteAposentado cadastroClienteAposentado = new viewTelaCadastroClienteAposentado();
+				TelaCadastroClienteAposentado cadastroClienteAposentado = new TelaCadastroClienteAposentado();
 				desktopPane.add(cadastroClienteAposentado);
 				cadastroClienteAposentado.setVisible(true);
 			}

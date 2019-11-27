@@ -1,6 +1,8 @@
 package view;
 
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -10,12 +12,13 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import model.DAO.UsuarioDAO;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JPasswordField;
 
-public class viewTelaLogin {
+public class TelaLogin {
 
 	private JFrame frame;
 	private JTextField txtLogin;
@@ -36,9 +39,18 @@ public class viewTelaLogin {
             System.out.println(ex);
         }
 		EventQueue.invokeLater(new Runnable() {
+
 			public void run() {
 				try {
-					viewTelaLogin window = new viewTelaLogin();
+					TelaLogin window = new TelaLogin();
+					window.frame.setTitle("Login");
+					try {
+						window.frame.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
+			        } catch (NullPointerException ex) {
+			        	System.out.println("nao encontrou o icone");
+			        }
+					window.frame.setResizable(false);
+					window.frame.setLocationRelativeTo(null);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -50,7 +62,7 @@ public class viewTelaLogin {
 	/**
 	 * Create the application.
 	 */
-	public viewTelaLogin() {
+	public TelaLogin() {
 		initialize();
 	}
 
@@ -81,7 +93,10 @@ public class viewTelaLogin {
 				UsuarioDAO usuarioDAO = new UsuarioDAO();
 				if (usuarioDAO.confereLogin(txtLogin.getText(), new String(txtPassword.getPassword()))) {
 //					JOptionPane.showMessageDialog(null, "Logou");
-					telaPrincipal telaPrinc = new telaPrincipal();
+					TelaPrincipal telaPrinc = new TelaPrincipal();
+					telaPrinc.setTitle("Login");
+					telaPrinc.setResizable(false);
+					telaPrinc.setLocationRelativeTo(null);
 					telaPrinc.setVisible(true);
 					frame.dispose();
 				}else{

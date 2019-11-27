@@ -4,7 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JInternalFrame;
 
-public class viewTelaCadastroClienteAposentado extends JInternalFrame {
+public class TelaCadastroClienteAposentado extends JInternalFrame {
 
 	/**
 	 * Launch the application.
@@ -13,7 +13,7 @@ public class viewTelaCadastroClienteAposentado extends JInternalFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					viewTelaCadastroClienteAposentado frame = new viewTelaCadastroClienteAposentado();
+					TelaCadastroClienteAposentado frame = new TelaCadastroClienteAposentado();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -25,7 +25,7 @@ public class viewTelaCadastroClienteAposentado extends JInternalFrame {
 	/**
 	 * Create the frame.
 	 */
-	public viewTelaCadastroClienteAposentado() {
+	public TelaCadastroClienteAposentado() {
 		setBounds(100, 100, 450, 300);
 
 	}
