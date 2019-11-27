@@ -75,13 +75,15 @@ public class viewTelaLogin {
 		JLabel labelSenha = new JLabel("senha");
 		labelSenha.setBounds(24, 78, 46, 14);
 		frame.getContentPane().add(labelSenha);
-		
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				UsuarioDAO usuarioDAO = new UsuarioDAO();
 				if (usuarioDAO.confereLogin(txtLogin.getText(), new String(txtPassword.getPassword()))) {
-					JOptionPane.showMessageDialog(null, "Logou");
+//					JOptionPane.showMessageDialog(null, "Logou");
+					telaPrincipal telaPrinc = new telaPrincipal();
+					telaPrinc.setVisible(true);
+					frame.dispose();
 				}else{
 					JOptionPane.showMessageDialog(null, "Dados inválidos");
 				}
