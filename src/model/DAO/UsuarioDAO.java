@@ -13,37 +13,37 @@ public class UsuarioDAO {
 
 	public Usuario confereLogin(String login, String senha) {
 
-        Connection conexao = ConnectionFactory.getConnection();
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 
-        try {
-            ps = conexao.prepareStatement("SELECT * FROM usuario WHERE loginUsuario = ? and senhaUsuario = ?");
-            ps.setString(1, login);
-            ps.setString(2, senha);
+		try {
+			ps = conexao.prepareStatement("SELECT * FROM usuario WHERE loginUsuario = ? and senhaUsuario = ?");
+			ps.setString(1, login);
+			ps.setString(2, senha);
 
-            rs = ps.executeQuery();
+			rs = ps.executeQuery();
 
-            if (rs.next()) {                
-                Usuario usuario = new Usuario();
-                usuario.setIdUsuario(rs.getInt("idUsuario"));
-                usuario.setNomeUsuario(rs.getString("nomeUsuario"));
-                usuario.setTipoUsuario(rs.getString("tipoUsuario"));
-                return usuario;
-            }else {
-            	throw new UsuarioNaoEncontradoException("Login ou Senha inválidos");
-            }
-        } catch (SQLException ex) {
-        	System.out.println(ex);
-        } finally {
-            ConnectionFactory.closeConnection(conexao);
-            try {
+			if (rs.next()) {
+				Usuario usuario = new Usuario();
+				usuario.setIdUsuario(rs.getInt("idUsuario"));
+				usuario.setNomeUsuario(rs.getString("nomeUsuario"));
+				usuario.setTipoUsuario(rs.getString("tipoUsuario"));
+				return usuario;
+			} else {
+				throw new UsuarioNaoEncontradoException("Login ou Senha inválidos");
+			}
+		} catch (SQLException ex) {
+			System.out.println(ex);
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
 				ps.close();
-	            rs.close();
+				rs.close();
 			} catch (SQLException e) {
 				System.out.println(e);
 			}
-        }
-        return null;
-    }
+		}
+		return null;
+	}
 }

@@ -45,7 +45,7 @@ public class TelaPrincipal extends JFrame {
 		JMenuItem mntmCadastrarCliente = new JMenuItem("Cadastrar cliente");
 		mntmCadastrarCliente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				TelaCadastroClienteAposentado cadastroClienteAposentado = new TelaCadastroClienteAposentado();
+				TelaCadastroCliente cadastroClienteAposentado = new TelaCadastroCliente();
 				desktopPane.add(cadastroClienteAposentado);
 				cadastroClienteAposentado.setVisible(true);
 			}
