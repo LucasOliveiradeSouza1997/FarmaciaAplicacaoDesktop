@@ -117,31 +117,35 @@ public class TelaCadastroCliente extends JInternalFrame {
 				String rg = txtRg.getText();
 				String endereco = txtEndereco.getText();
 				String telefone = txtTelefone.getText();
-				String aposentado = "";
+				String tipoCliente = "";
 				if (rdbtnAposentadoSim.isSelected()) {
-					aposentado = "E";
+					tipoCliente = "E";
 				} else if (rdbtnAposentadoNao.isSelected()) {
-					aposentado = "N";
+					tipoCliente = "N";
 				}
 				if (cpf.equals("") || nome.equals("") || rg.equals("") || endereco.equals("") || telefone.equals("")
-						|| aposentado.equals("")) {
+						|| tipoCliente.equals("")) {
 					JOptionPane.showMessageDialog(null, "Campos não preenchidos", "Erro no Cadastro",
 							JOptionPane.ERROR_MESSAGE);
 				} else {
 					try {
 						Cliente cliente = new Cliente();
 						ClienteDAO clienteDao = new ClienteDAO();
-						cliente.setCpfCliente(cpf);
+						cliente.setCpfCliente(cpf.replaceAll("[.]", "").replaceAll("-", ""));
 						cliente.setNomeCLiente(nome);
-						cliente.setRgCLiente(rg);
+						cliente.setRgCLiente(rg.replaceAll("[.]", "").replaceAll("-", ""));
 						cliente.setEnderecoCliente(endereco);
-						cliente.setTelefoneCLiente(telefone);
+						cliente.setTelefoneCLiente(telefone.replaceAll("[(]", "").replaceAll("[)]", "").replaceAll("-", "").replaceAll(" ", ""));
+						cliente.setTipoCLiente(tipoCliente);
 						cliente.setQtdDEsconto(20);
 						cliente.setDescontoDinheiro(5);
 						clienteDao.create(cliente);
+						dispose();
+						JOptionPane.showMessageDialog(null, "Salvo com sucesso!");
 					} catch (Exception e) {
-						JOptionPane.showMessageDialog(null, "Erro ao cadastrar Cliente", "Erro no Cadastro do CLiente",
+						JOptionPane.showMessageDialog(null, "Erro ao cadastrar Cliente: ", "Erro no Cadastro do CLiente",
 								JOptionPane.ERROR_MESSAGE);
+						e.printStackTrace();
 					}
 				}
 			}
