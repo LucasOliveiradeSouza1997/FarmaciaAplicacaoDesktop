@@ -45,7 +45,7 @@ public class TelaLogin {
 			public void run() {
 				try {
 					TelaLogin window = new TelaLogin();
-					window.frame.setTitle("Farmácia Express");
+					window.frame.setTitle("Farmácia Express - Login");
 					try {
 						window.frame.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
 			        } catch (NullPointerException ex) {

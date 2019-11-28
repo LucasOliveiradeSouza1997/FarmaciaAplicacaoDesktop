@@ -2,7 +2,7 @@ package Exception;
 
 public class UsuarioNaoEncontradoException extends RuntimeException {
 
-	private static final long serialVersionUID = -3099708112099740859L;
+	private static final long serialVersionUID = 8788616258057096317L;
 
 	public UsuarioNaoEncontradoException(String mensagem, Throwable e) {
 		super(mensagem, e);

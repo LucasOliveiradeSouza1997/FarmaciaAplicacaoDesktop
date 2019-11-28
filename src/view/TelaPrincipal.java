@@ -1,6 +1,5 @@
 package view;
 
-import java.awt.EventQueue;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,12 +16,8 @@ import model.bean.Usuario;
 
 public class TelaPrincipal extends JFrame {
 	
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 5056169976489775135L;
 	private Usuario usuario;
-
 	private JPanel contentPane;
 
 	/**
@@ -32,7 +27,7 @@ public class TelaPrincipal extends JFrame {
 		this.usuario = usuario;
 		setResizable(false);
 		setVisible(true);
-		setTitle(this.usuario.getNomeUsuario());
+		setTitle("Farmácia Express - "+ this.usuario.getNomeUsuario());
 		try {
 			setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
         } catch (NullPointerException ex) {

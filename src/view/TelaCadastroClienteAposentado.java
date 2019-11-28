@@ -1,33 +1,20 @@
 package view;
 
-import java.awt.EventQueue;
-
 import javax.swing.JInternalFrame;
 
 public class TelaCadastroClienteAposentado extends JInternalFrame {
 
 	/**
-	 * Launch the application.
+	 * 
 	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					TelaCadastroClienteAposentado frame = new TelaCadastroClienteAposentado();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
+	private static final long serialVersionUID = 2339528519848930755L;
 
 	/**
 	 * Create the frame.
 	 */
 	public TelaCadastroClienteAposentado() {
-		setBounds(100, 100, 450, 300);
-
+		setBounds(0, 0, 794, 550);
+		setClosable(true);
+		setTitle("Farmácia Express - Cadastro de Cliente");
 	}
-
 }
