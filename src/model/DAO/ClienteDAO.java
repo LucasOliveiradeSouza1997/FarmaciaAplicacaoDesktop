@@ -2,7 +2,10 @@ package model.DAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JOptionPane;
 
@@ -52,4 +55,43 @@ public class ClienteDAO {
 			}
 		}
 	}
+	
+	public List<Cliente> read() {
+
+        Connection conexao = ConnectionFactory.getConnection();
+        
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        List<Cliente> clientes = new ArrayList<>();
+
+        try {
+            ps = conexao.prepareStatement("SELECT * FROM cliente");
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Cliente cliente = new Cliente();
+                cliente.setCpfCliente(rs.getString("cpfCliente"));
+                cliente.setNomeCLiente(rs.getString("nomeCLiente"));
+                cliente.setRgCLiente(rs.getString("rgCLiente"));
+                cliente.setEnderecoCliente(rs.getString("enderecoCliente"));
+                cliente.setTelefoneCLiente(rs.getString("telefoneCLiente"));
+                cliente.setTipoCLiente(rs.getString("tipoCLiente"));
+                
+                clientes.add(cliente);
+            }
+
+        } catch (SQLException ex) {
+            System.out.println(ex);
+        } finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+				System.out.println(e);
+			}
+		}
+        return clientes;
+    }
 }
