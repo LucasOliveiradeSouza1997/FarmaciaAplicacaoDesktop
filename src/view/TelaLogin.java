@@ -76,23 +76,22 @@ public class TelaLogin {
 		frame.getContentPane().setLayout(null);
 		
 		JLabel lblLogin = new JLabel("login");
-		lblLogin.setBounds(24, 38, 46, 14);
+		lblLogin.setBounds(253, 26, 46, 14);
 		frame.getContentPane().add(lblLogin);
 		
 		txtLogin = new JTextField();
-		txtLogin.setBounds(140, 104, 223, 23);
+		txtLogin.setBounds(253, 54, 171, 23);
 		frame.getContentPane().add(txtLogin);
 		txtLogin.setColumns(10);
 		
 		JLabel labelSenha = new JLabel("senha");
-		labelSenha.setBounds(24, 78, 46, 14);
+		labelSenha.setBounds(253, 86, 46, 14);
 		frame.getContentPane().add(labelSenha);
 		JButton btnEntrar = new JButton("Entrar");
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				UsuarioDAO usuarioDAO = new UsuarioDAO();
 				if (usuarioDAO.confereLogin(txtLogin.getText(), new String(txtPassword.getPassword()))) {
-//					JOptionPane.showMessageDialog(null, "Logou");
 					TelaPrincipal telaPrinc = new TelaPrincipal();
 					telaPrinc.setTitle("Login");
 					telaPrinc.setResizable(false);
@@ -100,21 +99,21 @@ public class TelaLogin {
 					telaPrinc.setVisible(true);
 					frame.dispose();
 				}else{
-					JOptionPane.showMessageDialog(null, "Dados inválidos");
+					JOptionPane.showMessageDialog(null, "Login ou Senha inválidos", "Falha no Login", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
-		btnEntrar.setBounds(161, 212, 89, 23);
+		btnEntrar.setBounds(288, 178, 96, 30);
 		frame.getContentPane().add(btnEntrar);
 		
 		txtPassword = new JPasswordField();
-		txtPassword.setBounds(128, 143, 223, 23);
+		txtPassword.setBounds(253, 111, 171, 23);
 		frame.getContentPane().add(txtPassword);
 		
-		ImageIcon imagem = new ImageIcon(Toolkit.getDefaultToolkit().getImage("imagens/palavraFarmacia.png"));
+		ImageIcon imagem = new ImageIcon(Toolkit.getDefaultToolkit().getImage("imagens/farmaciaImagem.png"));
 		JLabel lblImagemFarmacia = new JLabel(imagem);
 		
-		lblImagemFarmacia.setBounds(128, 22, 212, 52);
+		lblImagemFarmacia.setBounds(10, 11, 225, 225);
 		frame.getContentPane().add(lblImagemFarmacia);
 	}
 }
