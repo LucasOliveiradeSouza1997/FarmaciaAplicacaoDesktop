@@ -45,12 +45,22 @@ public class TelaPrincipal extends JFrame {
 		JMenuItem mntmCadastrarCliente = new JMenuItem("Cadastrar cliente");
 		mntmCadastrarCliente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				TelaCadastroCliente cadastroClienteAposentado = new TelaCadastroCliente();
-				desktopPane.add(cadastroClienteAposentado);
-				cadastroClienteAposentado.setVisible(true);
+				TelaCadastroCliente cadastroCliente = new TelaCadastroCliente();
+				desktopPane.add(cadastroCliente);
+				cadastroCliente.setVisible(true);
 			}
 		});
 		mnCliente.add(mntmCadastrarCliente);
+		
+		JMenuItem mntmListarClientes = new JMenuItem("Listar clientes");
+		mntmListarClientes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				TelaListarClientes listarCLientes = new TelaListarClientes();
+				desktopPane.add(listarCLientes);
+				listarCLientes.setVisible(true);
+			}
+		});
+		mnCliente.add(mntmListarClientes);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
