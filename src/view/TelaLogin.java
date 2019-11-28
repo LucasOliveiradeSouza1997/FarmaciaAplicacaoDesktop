@@ -10,7 +10,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import Exception.UsuarioNaoEncontradoException;
 import model.DAO.UsuarioDAO;
+import model.bean.Usuario;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -43,7 +45,7 @@ public class TelaLogin {
 			public void run() {
 				try {
 					TelaLogin window = new TelaLogin();
-					window.frame.setTitle("Login");
+					window.frame.setTitle("Farmácia Express");
 					try {
 						window.frame.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
 			        } catch (NullPointerException ex) {
@@ -80,7 +82,7 @@ public class TelaLogin {
 		frame.getContentPane().add(lblLogin);
 		
 		txtLogin = new JTextField();
-		txtLogin.setBounds(253, 54, 171, 23);
+		txtLogin.setBounds(253, 51, 171, 26);
 		frame.getContentPane().add(txtLogin);
 		txtLogin.setColumns(10);
 		
@@ -91,23 +93,22 @@ public class TelaLogin {
 		btnEntrar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				UsuarioDAO usuarioDAO = new UsuarioDAO();
-				if (usuarioDAO.confereLogin(txtLogin.getText(), new String(txtPassword.getPassword()))) {
-					TelaPrincipal telaPrinc = new TelaPrincipal();
-					telaPrinc.setTitle("Login");
-					telaPrinc.setResizable(false);
-					telaPrinc.setLocationRelativeTo(null);
-					telaPrinc.setVisible(true);
+				Usuario usuario = new Usuario();
+				try {
+					usuario =  usuarioDAO.confereLogin(txtLogin.getText(), new String(txtPassword.getPassword()));
+					new TelaPrincipal(usuario);
 					frame.dispose();
-				}else{
-					JOptionPane.showMessageDialog(null, "Login ou Senha inválidos", "Falha no Login", JOptionPane.ERROR_MESSAGE);
+				} catch (UsuarioNaoEncontradoException e) {
+					JOptionPane.showMessageDialog(null, e.getMessage(), "Falha no Login", JOptionPane.ERROR_MESSAGE);
 				}
+				
 			}
 		});
 		btnEntrar.setBounds(288, 178, 96, 30);
 		frame.getContentPane().add(btnEntrar);
 		
 		txtPassword = new JPasswordField();
-		txtPassword.setBounds(253, 111, 171, 23);
+		txtPassword.setBounds(253, 108, 171, 26);
 		frame.getContentPane().add(txtPassword);
 		
 		ImageIcon imagem = new ImageIcon(Toolkit.getDefaultToolkit().getImage("imagens/farmaciaImagem.png"));

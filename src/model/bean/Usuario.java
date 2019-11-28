@@ -1,11 +1,9 @@
 package model.bean;
 
-import Enum.TipoUsuario;
-
 public class Usuario {
 	private int idUsuario;
 	private String nomeUsuario;
-	private TipoUsuario tipoUsuario;
+	private String tipoUsuario;
 	private String loginUsuario;
 	
 	public String getLoginUsuario() {
@@ -28,10 +26,10 @@ public class Usuario {
 	public void setNomeUsuario(String nomeUsuario) {
 		this.nomeUsuario = nomeUsuario;
 	}
-	public TipoUsuario getTipoUsuario() {
+	public String getTipoUsuario() {
 		return tipoUsuario;
 	}
-	public void setTipoUsuario(TipoUsuario tipoUsuario) {
+	public void setTipoUsuario(String tipoUsuario) {
 		this.tipoUsuario = tipoUsuario;
 	}
 	public String getSenhaUsuario() {

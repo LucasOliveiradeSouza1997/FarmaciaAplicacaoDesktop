@@ -6,14 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import ConnectionFactory.ConnectionFactory;
+import Exception.UsuarioNaoEncontradoException;
+import model.bean.Usuario;
 
 public class UsuarioDAO {
-	public boolean confereLogin(String login, String senha) {
+
+	public Usuario confereLogin(String login, String senha) {
 
         Connection conexao = ConnectionFactory.getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-        boolean encontrou = false;
 
         try {
             ps = conexao.prepareStatement("SELECT * FROM usuario WHERE loginUsuario = ? and senhaUsuario = ?");
@@ -23,7 +25,13 @@ public class UsuarioDAO {
             rs = ps.executeQuery();
 
             if (rs.next()) {                
-                encontrou = true;
+                Usuario usuario = new Usuario();
+                usuario.setIdUsuario(rs.getInt("idUsuario"));
+                usuario.setNomeUsuario(rs.getString("nomeUsuario"));
+                usuario.setTipoUsuario(rs.getString("tipoUsuario"));
+                return usuario;
+            }else {
+            	throw new UsuarioNaoEncontradoException("Login ou Senha inválidos");
             }
         } catch (SQLException ex) {
         	System.out.println(ex);
@@ -36,6 +44,6 @@ public class UsuarioDAO {
 				System.out.println(e);
 			}
         }
-        return encontrou;
+        return null;
     }
 }
