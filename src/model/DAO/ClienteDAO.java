@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 
 import ConnectionFactory.ConnectionFactory;
 import Exception.ClienteNaoEncontradoException;
+import Exception.DAOException;
 import model.bean.Cliente;
 
 public class ClienteDAO {
@@ -49,7 +50,9 @@ public class ClienteDAO {
 		} finally {
 			ConnectionFactory.closeConnection(conexao);
 			try {
-				ps.close();
+				if(ps != null) {
+					ps.close();
+				}
 			} catch (SQLException e) {
 				System.out.println(e);
 			}
@@ -93,5 +96,40 @@ public class ClienteDAO {
 			}
 		}
         return clientes;
+    }
+	
+    public void delete(Cliente c) {
+
+        Connection conexao = ConnectionFactory.getConnection();
+        
+        PreparedStatement ps = null;
+        String tipoCLiente ="";
+        try {
+        	if (c.getTipoCLiente().equals("E")) {
+        		tipoCLiente = "clienteEspecial";
+			}else if(c.getTipoCLiente().equals("N")) {
+				tipoCLiente = "clienteNormal";
+			}else {
+				throw new ClienteNaoEncontradoException("Tipo Cliente não é Especial ou Normal");
+			}
+            ps = conexao.prepareStatement("DELETE FROM "+ tipoCLiente + " WHERE cpfCliente = ?");
+            ps.setString(1, c.getCpfCliente());
+            ps.executeUpdate();
+            ps.close();
+            ps = conexao.prepareStatement("DELETE FROM cliente WHERE cpfCliente = ?");
+            ps.setString(1, c.getCpfCliente());
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DAOException(ex.getMessage());
+        } finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if(ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				System.out.println(e);
+			}
+		}
     }
 }

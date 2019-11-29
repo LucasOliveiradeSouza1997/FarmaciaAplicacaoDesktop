@@ -150,7 +150,7 @@ public class TelaCadastroCliente extends JInternalFrame {
 				}
 			}
 		});
-		btnCadastrarCliente.setBounds(10, 287, 89, 30);
+		btnCadastrarCliente.setBounds(10, 287, 90, 30);
 		getContentPane().add(btnCadastrarCliente);
 	}
 }

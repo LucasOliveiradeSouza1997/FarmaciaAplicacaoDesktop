@@ -224,6 +224,11 @@ public class viewJTable extends javax.swing.JFrame {
         
 //        System.out.println("Linha selecionada" + jTProdutos.getSelectedRow()); 
         if(jTProdutos.getSelectedRow() != -1){
+        	try {
+				
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
             DefaultTableModel dtmProdutos = (DefaultTableModel) jTProdutos.getModel();
             dtmProdutos.removeRow(jTProdutos.getSelectedRow());
         }else{
