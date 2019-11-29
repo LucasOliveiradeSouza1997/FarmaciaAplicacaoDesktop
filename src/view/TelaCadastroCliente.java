@@ -112,11 +112,11 @@ public class TelaCadastroCliente extends JInternalFrame {
 		JButton btnCadastrarCliente = new JButton("Salvar");
 		btnCadastrarCliente.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				String cpf = txtCpf.getText();
+				String cpf = txtCpf.getText().replaceAll("[.]", "").replaceAll("-", "").replaceAll(" ", "");
 				String nome = txtNome.getText();
-				String rg = txtRg.getText();
+				String rg = txtRg.getText().replaceAll("[.]", "").replaceAll("-", "").replaceAll(" ", "");
 				String endereco = txtEndereco.getText();
-				String telefone = txtTelefone.getText();
+				String telefone = txtTelefone.getText().replaceAll("[(]", "").replaceAll("[)]", "").replaceAll("-", "").replaceAll(" ", "");
 				String tipoCliente = "";
 				if (rdbtnAposentadoSim.isSelected()) {
 					tipoCliente = "E";
@@ -130,10 +130,10 @@ public class TelaCadastroCliente extends JInternalFrame {
 				}else if (telefone.length() < 10 ) {
 					JOptionPane.showMessageDialog(null, "Digite um telefone com 8 digitos ou mais", "Erro no Cadastro",
 							JOptionPane.ERROR_MESSAGE);
-				}else if(rg.length() != 9) {
+				}else if(rg.length() < 9) {
 					JOptionPane.showMessageDialog(null, "Digite um RG valido", "Erro no Cadastro",
 							JOptionPane.ERROR_MESSAGE);
-				}else if(cpf.length() != 11) {
+				}else if(cpf.length() < 11) {
 					JOptionPane.showMessageDialog(null, "Digite um CPF valido", "Erro no Cadastro",
 							JOptionPane.ERROR_MESSAGE);
 				}
@@ -141,11 +141,11 @@ public class TelaCadastroCliente extends JInternalFrame {
 					try {
 						Cliente cliente = new Cliente();
 						ClienteDAO clienteDao = new ClienteDAO();
-						cliente.setCpfCliente(cpf.replaceAll("[.]", "").replaceAll("-", ""));
+						cliente.setCpfCliente(cpf);
 						cliente.setNomeCLiente(nome);
-						cliente.setRgCLiente(rg.replaceAll("[.]", "").replaceAll("-", ""));
+						cliente.setRgCLiente(rg);
 						cliente.setEnderecoCliente(endereco);
-						cliente.setTelefoneCLiente(telefone.replaceAll("[(]", "").replaceAll("[)]", "").replaceAll("-", "").replaceAll(" ", ""));
+						cliente.setTelefoneCLiente(telefone);
 						cliente.setTipoCLiente(tipoCliente);
 						cliente.setQtdDEsconto(20);
 						cliente.setDescontoDinheiro(5);
