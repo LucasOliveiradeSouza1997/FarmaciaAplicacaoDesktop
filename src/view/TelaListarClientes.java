@@ -86,18 +86,19 @@ public class TelaListarClientes extends JInternalFrame {
 								table.getValueAt(table.getSelectedRow(), 5).toString().equals("Cliente Normal") ? "N"
 										: "E");
 						ClienteDAO clienteDao = new ClienteDAO();
-						if (c.getTelefoneCLiente().length() < 10 || c.getTelefoneCLiente().length() > 11) {
+						if (c.getTelefoneCLiente().length() < 10 || c.getTelefoneCLiente().length() > 11
+								|| !isNumeric(c.getTelefoneCLiente())) {
 							JOptionPane.showMessageDialog(null, "Digite um telefone válido", "Erro no Cadastro",
 									JOptionPane.ERROR_MESSAGE);
-						}else if(c.getRgCLiente().length() != 9) {
+						} else if (c.getRgCLiente().length() != 9 || !isNumeric(c.getRgCLiente())) {
 							JOptionPane.showMessageDialog(null, "Digite um RG valido", "Erro no Cadastro",
 									JOptionPane.ERROR_MESSAGE);
-						}else {
+						} else {
 							clienteDao.update(c);
-							JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");			
 						}
+						atualizarTabelaClientes();
 					} catch (Exception e) {
-						e.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Erro ao atualizar: " + e.getMessage());
 					}
 				} else {
@@ -107,8 +108,14 @@ public class TelaListarClientes extends JInternalFrame {
 		});
 		btnAtualizar.setBounds(218, 460, 90, 30);
 		getContentPane().add(btnAtualizar);
+		atualizarTabelaClientes();
+	}
 
+	private void atualizarTabelaClientes() {
 		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+		modelo.getDataVector().removeAllElements();
+		modelo.fireTableDataChanged();
+		
 		ClienteDAO clienteDao = new ClienteDAO();
 		for (Cliente c : clienteDao.read()) {
 			String tipoCliente = "-";
@@ -147,5 +154,14 @@ public class TelaListarClientes extends JInternalFrame {
 					.append(telefone.substring(6, 10));
 		}
 		return sb.toString();
+	}
+
+	public static boolean isNumeric(String str) {
+		try {
+			Double.parseDouble(str);
+			return true;
+		} catch (NumberFormatException e) {
+			return false;
+		}
 	}
 }
