@@ -32,38 +32,68 @@ public class TelaListarClientes extends JInternalFrame {
 		table.setModel(new DefaultTableModel(new Object[][] {},
 				new String[] { "Nome", "Cpf", "Rg", "Endereco", "Telefone", "TipoCliente" }) {
 			private static final long serialVersionUID = 7549926424366818036L;
-			boolean[] canEdit = new boolean[] { false, false, false,false,false,false };
+			boolean[] canEdit = new boolean[] { true, false, true, true, true, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];
 			}
 		});
-		
+
 		JButton btnExcluir = new JButton("Excluir");
 		btnExcluir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-		        if(table.getSelectedRow() != -1){
-		        	try {
-		        		Cliente c = new Cliente();
-		        		c.setCpfCliente(table.getValueAt(table.getSelectedRow(), 1).toString().replaceAll("-", "").replaceAll("[.]", ""));
-		        		c.setTipoCLiente(table.getValueAt(table.getSelectedRow(), 5).toString().equals("Cliente Normal") ? "N":"E");
-		        		
-		        		DefaultTableModel dtmProdutos = (DefaultTableModel) table.getModel();
-		        		ClienteDAO clienteDao = new ClienteDAO();
-		        		clienteDao.delete(c);
-			            dtmProdutos.removeRow(table.getSelectedRow());
-			            JOptionPane.showMessageDialog(null, "Excluido com sucesso!");
+				if (table.getSelectedRow() != -1) {
+					try {
+						Cliente c = new Cliente();
+						c.setCpfCliente(table.getValueAt(table.getSelectedRow(), 1).toString().replaceAll("-", "")
+								.replaceAll("[.]", ""));
+						c.setTipoCLiente(
+								table.getValueAt(table.getSelectedRow(), 5).toString().equals("Cliente Normal") ? "N"
+										: "E");
+
+						DefaultTableModel dtmModelCliente = (DefaultTableModel) table.getModel();
+						ClienteDAO clienteDao = new ClienteDAO();
+						clienteDao.delete(c);
+						dtmModelCliente.removeRow(table.getSelectedRow());
+						JOptionPane.showMessageDialog(null, "Excluido com sucesso!");
 					} catch (Exception e) {
 						e.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Erro ao excluir: " + e.getMessage());
 					}
-		        }else{
-		            JOptionPane.showMessageDialog(null,"Selecione um cliente para Excluir");
-		        }
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione um cliente para Excluir");
+				}
 			}
 		});
 		btnExcluir.setBounds(72, 460, 90, 30);
 		getContentPane().add(btnExcluir);
+
+		JButton btnAtualizar = new JButton("Atualizar");
+		btnAtualizar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (table.getSelectedRow() != -1) {
+					try {
+						Cliente c = new Cliente();
+						c.setNomeCLiente(table.getValueAt(table.getSelectedRow(), 0).toString());
+						c.setCpfCliente(table.getValueAt(table.getSelectedRow(), 1).toString().replaceAll("-", "").replaceAll("[.]", ""));
+						c.setRgCLiente(table.getValueAt(table.getSelectedRow(), 2).toString().replaceAll("-", "").replaceAll("[.]", ""));
+						c.setEnderecoCliente(table.getValueAt(table.getSelectedRow(), 3).toString());
+						c.setTelefoneCLiente(table.getValueAt(table.getSelectedRow(), 4).toString().replaceAll("-", "").replaceAll("[(]", "").replaceAll("[)]", ""));
+						c.setTipoCLiente(table.getValueAt(table.getSelectedRow(), 5).toString().equals("Cliente Normal") ? "N"	: "E");
+						ClienteDAO clienteDao = new ClienteDAO();
+						clienteDao.update(c);
+						JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+					} catch (Exception e) {
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Erro ao atualizar: " + e.getMessage());
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione um cliente para Atualizar");
+				}
+			}
+		});
+		btnAtualizar.setBounds(218, 460, 90, 30);
+		getContentPane().add(btnAtualizar);
 
 		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
 		ClienteDAO clienteDao = new ClienteDAO();
@@ -75,25 +105,28 @@ public class TelaListarClientes extends JInternalFrame {
 				tipoCliente = "Cliente Aposentado";
 			}
 			modelo.addRow(new Object[] { c.getNomeCLiente(), maskCpf(c.getCpfCliente()), maskRg(c.getRgCLiente()),
-					c.getEnderecoCliente(), maskTelefone(c.getTelefoneCLiente()),tipoCliente });
+					c.getEnderecoCliente(), maskTelefone(c.getTelefoneCLiente()), tipoCliente });
 		}
 	}
-	
+
 	public static String maskRg(String rg) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(rg.substring(0, 2)).append(".").append(rg.substring(2, 5)).append(".").append(rg.substring(5, 8)).append("-").append(rg.substring(8, 9));
+		sb.append(rg.substring(0, 2)).append(".").append(rg.substring(2, 5)).append(".").append(rg.substring(5, 8))
+				.append("-").append(rg.substring(8, 9));
 		return sb.toString();
-    }
-	
+	}
+
 	public static String maskCpf(String cpf) {
 		StringBuilder sb = new StringBuilder();
-		sb.append(cpf.substring(0, 3)).append(".").append(cpf.substring(3, 6)).append(".").append(cpf.substring(6, 9)).append("-").append(cpf.substring(9, 11));
+		sb.append(cpf.substring(0, 3)).append(".").append(cpf.substring(3, 6)).append(".").append(cpf.substring(6, 9))
+				.append("-").append(cpf.substring(9, 11));
 		return sb.toString();
-    }
-	
+	}
+
 	public static String maskTelefone(String telefone) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("(").append(telefone.substring(0, 2)).append(")").append(telefone.substring(2, 7)).append("-").append(telefone.substring(7, 11));
+		sb.append("(").append(telefone.substring(0, 2)).append(")").append(telefone.substring(2, 7)).append("-")
+				.append(telefone.substring(7, 11));
 		return sb.toString();
-    }
+	}
 }

@@ -128,7 +128,33 @@ public class ClienteDAO {
 					ps.close();
 				}
 			} catch (SQLException e) {
-				System.out.println(e);
+				throw new DAOException(e.getMessage());
+			}
+		}
+    }
+    
+    public void update(Cliente c) {
+        Connection conexao = ConnectionFactory.getConnection();        
+        PreparedStatement ps = null;
+        try {
+            ps = conexao.prepareStatement("UPDATE cliente SET nomeCLiente=?,rgCLiente=?,enderecoCliente=?,telefoneCLiente=?,tipoCLiente=? WHERE cpfCliente=?");
+            ps.setString(1, c.getNomeCLiente());
+            ps.setString(2, c.getRgCLiente());
+            ps.setString(3, c.getEnderecoCliente());
+            ps.setString(4, c.getTelefoneCLiente());
+            ps.setString(5, c.getTipoCLiente());
+            ps.setString(6, c.getCpfCliente());
+            ps.executeUpdate();
+        } catch (SQLException ex) {
+            throw new DAOException(ex.getMessage());
+        } finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if(ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				throw new DAOException(e.getMessage());
 			}
 		}
     }
