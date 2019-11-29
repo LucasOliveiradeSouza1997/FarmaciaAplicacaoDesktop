@@ -75,14 +75,27 @@ public class TelaListarClientes extends JInternalFrame {
 					try {
 						Cliente c = new Cliente();
 						c.setNomeCLiente(table.getValueAt(table.getSelectedRow(), 0).toString());
-						c.setCpfCliente(table.getValueAt(table.getSelectedRow(), 1).toString().replaceAll("-", "").replaceAll("[.]", ""));
-						c.setRgCLiente(table.getValueAt(table.getSelectedRow(), 2).toString().replaceAll("-", "").replaceAll("[.]", ""));
+						c.setCpfCliente(table.getValueAt(table.getSelectedRow(), 1).toString().replaceAll("-", "")
+								.replaceAll("[.]", ""));
+						c.setRgCLiente(table.getValueAt(table.getSelectedRow(), 2).toString().replaceAll("-", "")
+								.replaceAll("[.]", ""));
 						c.setEnderecoCliente(table.getValueAt(table.getSelectedRow(), 3).toString());
-						c.setTelefoneCLiente(table.getValueAt(table.getSelectedRow(), 4).toString().replaceAll("-", "").replaceAll("[(]", "").replaceAll("[)]", ""));
-						c.setTipoCLiente(table.getValueAt(table.getSelectedRow(), 5).toString().equals("Cliente Normal") ? "N"	: "E");
+						c.setTelefoneCLiente(table.getValueAt(table.getSelectedRow(), 4).toString().replaceAll("-", "")
+								.replaceAll("[(]", "").replaceAll("[)]", ""));
+						c.setTipoCLiente(
+								table.getValueAt(table.getSelectedRow(), 5).toString().equals("Cliente Normal") ? "N"
+										: "E");
 						ClienteDAO clienteDao = new ClienteDAO();
-						clienteDao.update(c);
-						JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+						if (c.getTelefoneCLiente().length() < 10 || c.getTelefoneCLiente().length() > 11) {
+							JOptionPane.showMessageDialog(null, "Digite um telefone válido", "Erro no Cadastro",
+									JOptionPane.ERROR_MESSAGE);
+						}else if(c.getRgCLiente().length() != 9) {
+							JOptionPane.showMessageDialog(null, "Digite um RG valido", "Erro no Cadastro",
+									JOptionPane.ERROR_MESSAGE);
+						}else {
+							clienteDao.update(c);
+							JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+						}
 					} catch (Exception e) {
 						e.printStackTrace();
 						JOptionPane.showMessageDialog(null, "Erro ao atualizar: " + e.getMessage());
@@ -125,8 +138,14 @@ public class TelaListarClientes extends JInternalFrame {
 
 	public static String maskTelefone(String telefone) {
 		StringBuilder sb = new StringBuilder();
-		sb.append("(").append(telefone.substring(0, 2)).append(")").append(telefone.substring(2, 7)).append("-")
-				.append(telefone.substring(7, 11));
+		try {
+			sb.append("(").append(telefone.substring(0, 2)).append(")").append(telefone.substring(2, 7)).append("-")
+					.append(telefone.substring(7, 11));
+		} catch (StringIndexOutOfBoundsException e) {
+			sb.setLength(0);
+			sb.append("(").append(telefone.substring(0, 2)).append(")").append(telefone.substring(2, 6)).append("-")
+					.append(telefone.substring(6, 10));
+		}
 		return sb.toString();
 	}
 }

@@ -127,7 +127,17 @@ public class TelaCadastroCliente extends JInternalFrame {
 						|| tipoCliente.equals("")) {
 					JOptionPane.showMessageDialog(null, "Campos não preenchidos", "Erro no Cadastro",
 							JOptionPane.ERROR_MESSAGE);
-				} else {
+				}else if (telefone.length() < 10 ) {
+					JOptionPane.showMessageDialog(null, "Digite um telefone com 8 digitos ou mais", "Erro no Cadastro",
+							JOptionPane.ERROR_MESSAGE);
+				}else if(rg.length() != 9) {
+					JOptionPane.showMessageDialog(null, "Digite um RG valido", "Erro no Cadastro",
+							JOptionPane.ERROR_MESSAGE);
+				}else if(cpf.length() != 11) {
+					JOptionPane.showMessageDialog(null, "Digite um CPF valido", "Erro no Cadastro",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else {
 					try {
 						Cliente cliente = new Cliente();
 						ClienteDAO clienteDao = new ClienteDAO();
