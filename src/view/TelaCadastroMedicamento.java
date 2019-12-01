@@ -4,9 +4,16 @@ import java.awt.EventQueue;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+
+import model.DAO.ClienteDAO;
+import model.bean.Cliente;
+
 import javax.swing.JFormattedTextField;
 import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class TelaCadastroMedicamento extends JInternalFrame {
 
@@ -108,6 +115,59 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 		getContentPane().add(lblDistribuidor);
 		
 		JButton btnCadastrar = new JButton("Cadastrar");
+		btnCadastrar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				
+				String cpf = txtCpf.getText().replaceAll("[.]", "").replaceAll("-", "").replaceAll(" ", "");
+				String nome = txtNome.getText();
+				String rg = txtRg.getText().replaceAll("[.]", "").replaceAll("-", "").replaceAll(" ", "");
+				String endereco = txtEndereco.getText();
+				String telefone = txtTelefone.getText().replaceAll("[(]", "").replaceAll("[)]", "").replaceAll("-", "").replaceAll(" ", "");
+				String tipoCliente = "";
+				if (rdbtnAposentadoSim.isSelected()) {
+					tipoCliente = "E";
+				} else if (rdbtnAposentadoNao.isSelected()) {
+					tipoCliente = "N";
+				}
+				if (cpf.equals("") || nome.equals("") || rg.equals("") || endereco.equals("") || telefone.equals("")
+						|| tipoCliente.equals("")) {
+					JOptionPane.showMessageDialog(null, "Campos não preenchidos", "Erro no Cadastro",
+							JOptionPane.ERROR_MESSAGE);
+				}else if (telefone.length() < 10 ) {
+					JOptionPane.showMessageDialog(null, "Digite um telefone com 8 digitos ou mais", "Erro no Cadastro",
+							JOptionPane.ERROR_MESSAGE);
+				}else if(rg.length() < 9) {
+					JOptionPane.showMessageDialog(null, "Digite um RG valido", "Erro no Cadastro",
+							JOptionPane.ERROR_MESSAGE);
+				}else if(cpf.length() < 11) {
+					JOptionPane.showMessageDialog(null, "Digite um CPF valido", "Erro no Cadastro",
+							JOptionPane.ERROR_MESSAGE);
+				}
+				else {
+					try {
+						Cliente cliente = new Cliente();
+						ClienteDAO clienteDao = new ClienteDAO();
+						cliente.setCpfCliente(cpf);
+						cliente.setNomeCLiente(nome);
+						cliente.setRgCLiente(rg);
+						cliente.setEnderecoCliente(endereco);
+						cliente.setTelefoneCLiente(telefone);
+						cliente.setTipoCLiente(tipoCliente);
+						cliente.setQtdDEsconto(20);
+						cliente.setDescontoDinheiro(5);
+						clienteDao.create(cliente);
+						dispose();
+						JOptionPane.showMessageDialog(null, "Salvo com sucesso!");
+					} catch (Exception e) {
+						JOptionPane.showMessageDialog(null, "Erro ao cadastrar Cliente: ", "Erro no Cadastro do CLiente",
+								JOptionPane.ERROR_MESSAGE);
+						e.printStackTrace();
+					}
+				}
+			}
+			}
+		});
 		btnCadastrar.setBounds(10, 290, 90, 30);
 		getContentPane().add(btnCadastrar);
 
