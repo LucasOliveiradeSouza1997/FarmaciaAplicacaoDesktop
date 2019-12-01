@@ -94,6 +94,19 @@ public class TelaPrincipal extends JFrame {
 			}
 		});
 		mnMedicamento.add(mntmMedicamentosVencidos);
+		
+		JMenu mnEstoque = new JMenu("Estoque");
+		menuBar.add(mnEstoque);
+		
+		JMenuItem mntmGerenciarEstoque = new JMenuItem("Gerenciar Estoque");
+		mntmGerenciarEstoque.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaGerenciarEstoque gerenciarEstoque = new TelaGerenciarEstoque();
+				desktopPane.add(gerenciarEstoque);
+				gerenciarEstoque.setVisible(true);
+			}
+		});
+		mnEstoque.add(mntmGerenciarEstoque);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

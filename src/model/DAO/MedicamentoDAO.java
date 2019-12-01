@@ -10,6 +10,7 @@ import java.util.List;
 import ConnectionFactory.ConnectionFactory;
 import Exception.ClienteNaoEncontradoException;
 import Exception.DAOException;
+import model.bean.Estoque;
 import model.bean.Medicamento;
 
 public class MedicamentoDAO {
@@ -102,5 +103,41 @@ public class MedicamentoDAO {
 				throw new DAOException(e.getMessage());
 			}
 		}
+	}
+
+	public List<Medicamento> readMedicamentoXEstoque() {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<Medicamento> medicamentos = new ArrayList<>();
+		try {
+			ps = conexao.prepareStatement("SELECT medicamento.idMedicamento, medicamento.lote, medicamento.nomeMedicamento, estoque.quantidade, estoque.distribuidor from medicamento inner join estoque on medicamento.lote = estoque.lote");
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				Medicamento medicamento = new Medicamento();
+				Estoque estoque = new Estoque();
+				
+				medicamento.setIdMedicamento(rs.getInt("medicamento.idMedicamento"));
+				medicamento.setLote(rs.getInt("medicamento.lote"));
+				medicamento.setNomeMedicamento(rs.getString("medicamento.nomeMedicamento"));
+				estoque.setQuantidade(rs.getInt("estoque.quantidade"));
+				estoque.setDistribuidor(rs.getString("estoque.distribuidor"));
+				medicamento.setEstoque(estoque);
+				medicamentos.add(medicamento);
+			}
+
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+				throw new DAOException(e.getMessage());
+			}
+		}
+		return medicamentos;
 	}
 }

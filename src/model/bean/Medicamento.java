@@ -16,6 +16,7 @@ public class Medicamento {
 	private Date validadeMedicamento;
 	private boolean statusMedicamento;
 	private SimpleDateFormat formatoDDMMYYYY;
+	private Estoque estoque;
 	
 	public Medicamento() {
 		super();
@@ -80,4 +81,14 @@ public class Medicamento {
 	public void setStatusMedicamento(boolean statusMedicamento) {
 		this.statusMedicamento = statusMedicamento;
 	}
+
+	public Estoque getEstoque() {
+		return estoque;
+	}
+
+	public void setEstoque(Estoque estoque) {
+		this.estoque = estoque;
+	}
+	
+	
 }
