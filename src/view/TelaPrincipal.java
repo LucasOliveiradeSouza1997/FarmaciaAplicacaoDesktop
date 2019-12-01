@@ -74,6 +74,26 @@ public class TelaPrincipal extends JFrame {
 			}
 		});
 		mnMedicamento.add(mntmCadastrarMedicamento);
+		
+		JMenuItem mntmListarMedicamentos = new JMenuItem("Listar Medicamentos");
+		mntmListarMedicamentos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				TelaListarMedicamentos listarMedicamentos = new TelaListarMedicamentos();
+				desktopPane.add(listarMedicamentos);
+				listarMedicamentos.setVisible(true);
+			}
+		});
+		mnMedicamento.add(mntmListarMedicamentos);
+		
+		JMenuItem mntmMedicamentosVencidos = new JMenuItem("Relat\u00F3rio de Medicamentos Vencidos");
+		mntmMedicamentosVencidos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				TelaMedicamentosVencidos listarMedicamentosVencidos = new TelaMedicamentosVencidos();
+				desktopPane.add(listarMedicamentosVencidos);
+				listarMedicamentosVencidos.setVisible(true);
+			}
+		});
+		mnMedicamento.add(mntmMedicamentosVencidos);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
