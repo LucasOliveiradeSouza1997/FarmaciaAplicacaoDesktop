@@ -1,27 +1,25 @@
 package view;
 
-import java.awt.EventQueue;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 
+import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.text.MaskFormatter;
 
+import Auxiliares.JNumberFormatField;
 import Auxiliares.NumeroDoLoteMedicamento;
 import Exception.DataDdMmYyyyInvalida;
-import model.DAO.ClienteDAO;
 import model.DAO.EstoqueDAO;
 import model.DAO.MedicamentoDAO;
-import model.bean.Cliente;
 import model.bean.Estoque;
 import model.bean.Medicamento;
-
-import javax.swing.JFormattedTextField;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.math.BigDecimal;
-import java.util.Date;
-import java.awt.event.ActionEvent;
 
 public class TelaCadastroMedicamento extends JInternalFrame {
 
@@ -30,22 +28,6 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 	private JTextField txtDescricaoMedicamento;
 	private JTextField txtDistribuidor;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					TelaCadastroMedicamento frame = new TelaCadastroMedicamento();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public TelaCadastroMedicamento() {
 		setBounds(0, 0, 794, 550);
 		setClosable(true);
@@ -74,14 +56,10 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 		lblPreco.setBounds(10, 105, 150, 30);
 		getContentPane().add(lblPreco);
 
-		JFormattedTextField txtPreco = new JFormattedTextField();
+		JNumberFormatField txtPreco = new JNumberFormatField();
+//		JNumberFormatField txtQuantidade = new JNumberFormatField();
+		txtPreco.setLimit(6);
 		txtPreco.setBounds(160, 105, 150, 30);
-		try {
-			txtPreco.setFormatterFactory(
-					new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("R$ ###,##")));
-		} catch (java.text.ParseException ex) {
-			System.out.println("Erro na Mascara do Valor do Medicamento: " + ex);
-		}
 		getContentPane().add(txtPreco);
 
 		JLabel lblValidade = new JLabel("Validade do Medicamento");
@@ -98,15 +76,10 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 			System.out.println("Erro na Mascara da data de Validade: " + ex);
 		}
 		getContentPane().add(txtValidade);
-
-		JFormattedTextField txtQuantidade = new JFormattedTextField();
+		
+		JNumberFormatField txtQuantidade = new JNumberFormatField(new DecimalFormat("#,##000"));
+		txtQuantidade.setLimit(5);
 		txtQuantidade.setBounds(160, 187, 100, 30);
-		try {
-			txtQuantidade.setFormatterFactory(
-					new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("###")));
-		} catch (java.text.ParseException ex) {
-			System.out.println("Erro na Mascara da data de Validade: " + ex);
-		}
 		getContentPane().add(txtQuantidade);
 
 		JLabel lblQuantidade = new JLabel("Quantidade ");
@@ -129,10 +102,11 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 				String descricaoMedicamento = txtDescricaoMedicamento.getText();
 				String distribuidor = txtDistribuidor.getText();
 
-				String precoMedicamento = txtPreco.getText().replace("R$", "".replace(",", "."));
+				String precoMedicamento = txtPreco.getText().replace("R$", "").replace(",", ".").replaceAll(" ", "");
 				String validadeMedicamento = txtValidade.getText();
 				int quantidade = Integer.parseInt(txtQuantidade.getText());
 
+				System.out.println(precoMedicamento);
 				BigDecimal preco = new BigDecimal(precoMedicamento);
 
 				if (nomeMedicamento.equals("") || descricaoMedicamento.equals("") || distribuidor.equals("")
