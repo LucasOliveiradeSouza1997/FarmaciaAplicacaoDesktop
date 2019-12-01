@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import ConnectionFactory.ConnectionFactory;
+import Exception.DAOException;
 import Exception.UsuarioNaoEncontradoException;
 import model.bean.Usuario;
 
@@ -34,16 +35,15 @@ public class UsuarioDAO {
 				throw new UsuarioNaoEncontradoException("Login ou Senha inválidos");
 			}
 		} catch (SQLException ex) {
-			System.out.println(ex);
+			throw new DAOException(ex.getMessage());
 		} finally {
 			ConnectionFactory.closeConnection(conexao);
 			try {
 				ps.close();
 				rs.close();
 			} catch (SQLException e) {
-				System.out.println(e);
+				throw new DAOException(e.getMessage());
 			}
 		}
-		return null;
 	}
 }
