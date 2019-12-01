@@ -61,6 +61,19 @@ public class TelaPrincipal extends JFrame {
 			}
 		});
 		mnCliente.add(mntmListarClientes);
+		
+		JMenu mnMedicamento = new JMenu("Medicamento");
+		menuBar.add(mnMedicamento);
+		
+		JMenuItem mntmCadastrarMedicamento = new JMenuItem("Cadastrar medicamento");
+		mntmCadastrarMedicamento.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				TelaCadastroMedicamento cadastroMedicamento = new TelaCadastroMedicamento();
+				desktopPane.add(cadastroMedicamento);
+				cadastroMedicamento.setVisible(true);
+			}
+		});
+		mnMedicamento.add(mntmCadastrarMedicamento);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
