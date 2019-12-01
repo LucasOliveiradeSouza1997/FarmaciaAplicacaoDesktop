@@ -33,4 +33,27 @@ public class EstoqueDAO {
 			}
 		}
 	}
+
+	public void updateEstoque(Estoque e) {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		try {
+			ps = conexao.prepareStatement("UPDATE estoque SET quantidade=? WHERE lote=?");
+			ps.setInt(1, e.getQuantidade());
+			ps.setInt(2, e.getLote());
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException ex) {
+            throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException ex2) {
+	            throw new DAOException(ex2.getMessage());
+			}
+		}
+	}
 }
