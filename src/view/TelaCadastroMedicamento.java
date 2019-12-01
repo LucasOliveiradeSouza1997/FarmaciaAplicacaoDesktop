@@ -15,7 +15,9 @@ import javax.swing.text.MaskFormatter;
 
 import Auxiliares.JNumberFormatField;
 import Auxiliares.NumeroDoLoteMedicamento;
+import Auxiliares.ValidaData;
 import Exception.DataDdMmYyyyInvalida;
+import Exception.DataDigitadaInvalidaException;
 import model.DAO.EstoqueDAO;
 import model.DAO.MedicamentoDAO;
 import model.bean.Estoque;
@@ -102,11 +104,10 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 				String descricaoMedicamento = txtDescricaoMedicamento.getText();
 				String distribuidor = txtDistribuidor.getText();
 
-				String precoMedicamento = txtPreco.getText().replace("R$", "").replace(",", ".").replaceAll(" ", "");
+				String precoMedicamento = txtPreco.getText().replace("R$", "").replace("[.]", "").replace(",", ".").replaceAll(" ", "");
 				String validadeMedicamento = txtValidade.getText();
 				int quantidade = Integer.parseInt(txtQuantidade.getText());
 
-				System.out.println(precoMedicamento);
 				BigDecimal preco = new BigDecimal(precoMedicamento);
 
 				if (nomeMedicamento.equals("") || descricaoMedicamento.equals("") || distribuidor.equals("")
@@ -121,6 +122,7 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 							"Erro no Cadastro do Medicamento", JOptionPane.ERROR_MESSAGE);
 				} else {
 					try {
+						ValidaData.validaDataComExcecao(validadeMedicamento.split("/")[0],validadeMedicamento.split("/")[1],validadeMedicamento.split("/")[2]);
 						int lote = NumeroDoLoteMedicamento.geraNumero();
 						Estoque estoque = new Estoque();
 						estoque.setLote(lote);
@@ -130,8 +132,8 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 						medicamento.setLote(lote);
 						medicamento.setNomeMedicamento(nomeMedicamento);
 						medicamento.setDescricaoMedicamento(descricaoMedicamento);
-						medicamento.setPrecoMedicamento(preco);
 						medicamento.setValidadeMedicamento(validadeMedicamento);
+						medicamento.setPrecoMedicamento(preco);
 						medicamento.setStatusMedicamento(true);
 						EstoqueDAO estoqueDao = new EstoqueDAO();
 						estoqueDao.create(estoque);
@@ -139,11 +141,12 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 						medicamentoDao.create(medicamento);
 						dispose();
 						JOptionPane.showMessageDialog(null, "Salvo com sucesso!");
-					} catch (DataDdMmYyyyInvalida e) {
+					} catch (DataDdMmYyyyInvalida | DataDigitadaInvalidaException e) {
 						JOptionPane.showMessageDialog(null, e.getMessage(), "Erro no Cadastro do Medicamento",
 								JOptionPane.ERROR_MESSAGE);
 					} catch (Exception e) {
-						JOptionPane.showMessageDialog(null, "Erro ao cadastrar Cliente: ",
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Erro ao cadastrar Cliente:",
 								"Erro no Cadastro do Medicamento", JOptionPane.ERROR_MESSAGE);
 					}
 				}
