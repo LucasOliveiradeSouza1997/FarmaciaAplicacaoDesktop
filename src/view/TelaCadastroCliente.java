@@ -147,6 +147,7 @@ public class TelaCadastroCliente extends JInternalFrame {
 						cliente.setEnderecoCliente(endereco);
 						cliente.setTelefoneCLiente(telefone);
 						cliente.setTipoCLiente(tipoCliente);
+						cliente.setStatusCliente(true);
 						cliente.setQtdDEsconto(20);
 						cliente.setDescontoDinheiro(5);
 						clienteDao.create(cliente);

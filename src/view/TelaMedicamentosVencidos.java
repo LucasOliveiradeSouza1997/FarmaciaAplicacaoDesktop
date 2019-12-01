@@ -28,7 +28,7 @@ public class TelaMedicamentosVencidos extends JInternalFrame {
 		table.setModel(new DefaultTableModel(new Object[][] {},
 				new String[] { "id","Nome", "Descrição", "Preço", "Validade" }) {
 			private static final long serialVersionUID = 7549926424366818036L;
-			boolean[] canEdit = new boolean[] { false, true, true, true, true };
+			boolean[] canEdit = new boolean[] { false, false, false, false, false };
 
 			public boolean isCellEditable(int rowIndex, int columnIndex) {
 				return canEdit[columnIndex];

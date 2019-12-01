@@ -10,6 +10,7 @@ public class Cliente {
 	private String tipoCLiente;
 	private int qtdDEsconto; 
 	private int descontoDinheiro;
+	private boolean statusCliente;
 	
 	public String getCpfCliente() {
 		return cpfCliente;
@@ -59,4 +60,11 @@ public class Cliente {
 	public void setDescontoDinheiro(int descontoDinheiro) {
 		this.descontoDinheiro = descontoDinheiro;
 	}
+	public boolean isStatusCliente() {
+		return statusCliente;
+	}
+	public void setStatusCliente(boolean statusCliente) {
+		this.statusCliente = statusCliente;
+	}
+	
 }

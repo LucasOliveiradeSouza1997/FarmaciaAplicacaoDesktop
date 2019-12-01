@@ -22,7 +22,7 @@ public class ClienteDAO {
 		PreparedStatement ps = null;
 
 		try {
-			ps = conexao.prepareStatement("INSERT INTO cliente(cpfCliente,nomeCLiente,rgCLiente,enderecoCliente,telefoneCLiente,tipoCLiente)VALUES(?,?,?,?,?,?)");
+			ps = conexao.prepareStatement("INSERT INTO cliente(cpfCliente,nomeCLiente,rgCLiente,enderecoCliente,telefoneCLiente,tipoCLiente,statusCliente)VALUES(?,?,?,?,?,?,?)");
 
 			ps.setString(1,c.getCpfCliente());
 			ps.setString(2,c.getNomeCLiente());
@@ -30,6 +30,7 @@ public class ClienteDAO {
 			ps.setString(4,c.getEnderecoCliente());
 			ps.setString(5,c.getTelefoneCLiente());
 			ps.setString(6,c.getTipoCLiente());
+			ps.setBoolean(7, c.isStatusCliente());
 			ps.executeUpdate();
 			ps.close();
 			if (c.getTipoCLiente().equals("E")) {
@@ -69,7 +70,7 @@ public class ClienteDAO {
         List<Cliente> clientes = new ArrayList<>();
 
         try {
-            ps = conexao.prepareStatement("SELECT * FROM cliente");
+            ps = conexao.prepareStatement("SELECT * FROM cliente WHERE statusCliente=true");
             rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -116,7 +117,7 @@ public class ClienteDAO {
             ps.setString(1, c.getCpfCliente());
             ps.executeUpdate();
             ps.close();
-            ps = conexao.prepareStatement("DELETE FROM cliente WHERE cpfCliente = ?");
+            ps = conexao.prepareStatement("UPDATE cliente SET statusCliente=false WHERE cpfCliente = ?");
             ps.setString(1, c.getCpfCliente());
             ps.executeUpdate();
         } catch (SQLException ex) {
