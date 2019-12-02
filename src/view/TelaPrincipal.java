@@ -125,10 +125,10 @@ public class TelaPrincipal extends JFrame {
 		JMenu mnVenda = new JMenu("Venda");
 		menuBar.add(mnVenda);
 		
-		JMenu mnOpces = new JMenu("Opc\u00F5es");
+		JMenu mnOpces = new JMenu("Op\u00E7\u00F5es");
 		menuBar.add(mnOpces);
 		
-		JMenuItem mntmSairDoSistema = new JMenuItem("Sair do Sistema");
+		JMenuItem mntmSairDoSistema = new JMenuItem("Trocar de Usu\u00E1rio");
 		mntmSairDoSistema.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				TelaLogin window = new TelaLogin();
