@@ -63,41 +63,7 @@ public class TelaListarMedicamentos extends JInternalFrame {
 												
 				        if ((dialog == null) || (!(dialog.isVisible()))) {
 				            dialog = new JDialog();
-				            dialog.setTitle("Atualizar Medicamento");
-				            dialog.setPreferredSize(new Dimension(800, 350));
-				            dialog.pack();
-				            dialog.setModal(true);
-				            dialog.setFocusable(true);
-				            try {
-								dialog.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
-					        } catch (NullPointerException ex) {
-					        	System.out.println("nao encontrou o icone");
-					        }
-				            JPanel buttonPane = new JPanel();
-							JButton okButton = new JButton("OK");
-							JButton cancelButton = new JButton("Cancel");
-							buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-							okButton.addActionListener(new ActionListener() {
-								public void actionPerformed(ActionEvent e) {
-									MedicamentoDAO medicamentoDao = new MedicamentoDAO();
-									medicamentoDao.update(m);
-									JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
-									dialog.dispose();
-								}
-							});
-							cancelButton.addActionListener(new ActionListener() {
-								public void actionPerformed(ActionEvent e) {
-									dialog.dispose();
-								}
-							});
-							buttonPane.add(okButton);
-							buttonPane.add(cancelButton);
-							dialog.add(buttonPane, BorderLayout.SOUTH);
-							
-					        //Centralizando a dialog no centro da tela
-					        java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-					        dialog.setLocation((int) (d.getWidth() - dialog.getWidth()) / 2, (int) (d.getHeight() - dialog.getHeight()) / 2);
-					        dialog.setVisible(true);
+				            inicializaComponentesAlterar(dialog,m);   
 				        }
 				        atualizarTabelaMedicamentos();
 					} catch (Exception e) {
@@ -107,7 +73,7 @@ public class TelaListarMedicamentos extends JInternalFrame {
 				} else {
 					JOptionPane.showMessageDialog(null, "Selecione um medicamento para Atualizar");
 				}
-			}
+			}		
 		});
 		btnAtualizar.setBounds(42, 460, 90, 30);
 		getContentPane().add(btnAtualizar);
@@ -148,5 +114,44 @@ public class TelaListarMedicamentos extends JInternalFrame {
 			modelo.addRow(new Object[] { m.getIdMedicamento(),m.getNomeMedicamento(),m.getDescricaoMedicamento(),
 					"R$ "+ m.getPrecoMedicamento(),m.getValidadeMedicamentoToString()});
 		}
+	}
+	
+	private void inicializaComponentesAlterar(JDialog dialog, Medicamento m) {
+		dialog.setTitle("Atualizar Medicamento");
+        dialog.setPreferredSize(new Dimension(800, 350));
+        dialog.pack();
+        dialog.setModal(true);
+        dialog.setFocusable(true);
+        try {
+			dialog.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
+        } catch (NullPointerException ex) {
+        	System.out.println("nao encontrou o icone");
+        }
+        
+        JPanel buttonPane = new JPanel();
+		JButton okButton = new JButton("OK");
+		JButton cancelButton = new JButton("Cancel");
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		okButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MedicamentoDAO medicamentoDao = new MedicamentoDAO();
+				medicamentoDao.update(m);
+				JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+				dialog.dispose();
+			}
+		});
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dialog.dispose();
+			}
+		});
+		buttonPane.add(okButton);
+		buttonPane.add(cancelButton);
+		dialog.add(buttonPane, BorderLayout.SOUTH);
+		
+        //Centralizando a dialog no centro da tela
+        java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        dialog.setLocation((int) (d.getWidth() - dialog.getWidth()) / 2, (int) (d.getHeight() - dialog.getHeight()) / 2);
+        dialog.setVisible(true);
 	}
 }
