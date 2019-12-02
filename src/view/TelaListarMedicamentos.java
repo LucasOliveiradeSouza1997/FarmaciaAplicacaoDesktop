@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -21,7 +22,14 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import Auxiliares.JNumberFormatField;
+import Auxiliares.NumeroDoLoteMedicamento;
+import Auxiliares.ValidaData;
+import Exception.DataDdMmYyyyInvalida;
+import Exception.DataDigitadaInvalidaException;
+import model.DAO.EstoqueDAO;
 import model.DAO.MedicamentoDAO;
+import model.bean.Estoque;
 import model.bean.Medicamento;
 
 public class TelaListarMedicamentos extends JInternalFrame {
@@ -135,20 +143,20 @@ public class TelaListarMedicamentos extends JInternalFrame {
         
         JPanel buttonPane = new JPanel();
 		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonPane.setBounds(100,100, 100, 100);
         JPanel jpanelAlterar = new JPanel();
-//        jpanelAlterar.setLayout(new BorderLayout());
+        jpanelAlterar.setLayout(new BorderLayout());
         jpanelAlterar.setBorder(new EmptyBorder(5, 5, 5, 5));
         
-        jpanelAlterar.setBounds(0, 0, dialog.getWidth(), dialog.getHeight());
-        
-        System.out.println( dialog.getWidth() +" : "+ dialog.getHeight());
-        
+        jpanelAlterar.setBounds(0, 0, dialog.getWidth(), dialog.getHeight() - 30);
+                
 		JLabel lblNomeMedicamento = new JLabel("Nome do Medicamento");
 		lblNomeMedicamento.setBounds(0, 0, 150, 30);
 		jpanelAlterar.add(lblNomeMedicamento);
 		
 		JTextField txtNomeMedicamento = new JTextField();
 		txtNomeMedicamento.setBounds(150, 0, 400, 30);
+		txtNomeMedicamento.setText(m.getNomeMedicamento());
 		jpanelAlterar.add(txtNomeMedicamento);
 		
 		JLabel lblDescricaoMedicamento = new JLabel("Descri\u00E7\u00E3o do Medicamento");
@@ -157,22 +165,76 @@ public class TelaListarMedicamentos extends JInternalFrame {
 
 		JTextField txtDescricaoMedicamento = new JTextField();
 		txtDescricaoMedicamento.setBounds(150, 30, 400, 30);
+		txtDescricaoMedicamento.setText(m.getDescricaoMedicamento());
 		jpanelAlterar.add(txtDescricaoMedicamento);
 		
 		JLabel lblPreco = new JLabel("Pre\u00E7o do Medicamento");
-//		lblPreco.setBounds(0, 60, 150, 30);
-		lblPreco.setBounds(0, 0, 100, 30);
-
+		lblPreco.setBounds(0, 60, 150, 30);
 		jpanelAlterar.add(lblPreco);
+		
+		JNumberFormatField txtPreco = new JNumberFormatField();
+		txtPreco.setBounds(150, 60, 150, 30);
+		txtPreco.setText(m.getPrecoMedicamento().toString());
+		jpanelAlterar.add(txtPreco);
+
+		JLabel lblValidade = new JLabel("Validade Medicamento");
+		lblValidade.setBounds(0, 90, 150,30);
+		jpanelAlterar.add(lblValidade);
+
+		JFormattedTextField txtValidade = new JFormattedTextField();
+		txtValidade.setBounds(150, 90, 150, 30);
+
+		try {
+			txtValidade.setFormatterFactory(
+					new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.MaskFormatter("##/##/####")));
+		} catch (java.text.ParseException ex) {
+			System.out.println("Erro na Mascara da data de Validade: " + ex);
+		}
+		txtValidade.setText(m.getValidadeMedicamentoToString().replaceAll("/", ""));
+		jpanelAlterar.add(txtValidade);
+		
+		JLabel lblAlteracao = new JLabel("Alteração de Medicamentos");
+		lblAlteracao.setBounds(0, 120, 150, 30);
+		jpanelAlterar.add(lblAlteracao);
 		
 		JButton okButton = new JButton("OK");
 		JButton cancelButton = new JButton("Cancel");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				MedicamentoDAO medicamentoDao = new MedicamentoDAO();
-				medicamentoDao.update(m);
-				JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
-				dialog.dispose();
+				String nomeMedicamento = txtNomeMedicamento.getText();
+				String descricaoMedicamento = txtDescricaoMedicamento.getText();
+
+				String precoMedicamento = txtPreco.getText().replace("R$", "").replace("[.]", "").replace(",", ".").replaceAll(" ", "");
+				String validadeMedicamento = txtValidade.getText();
+
+				BigDecimal preco = new BigDecimal(precoMedicamento);
+
+				if (nomeMedicamento.equals("") || descricaoMedicamento.equals("")
+						|| precoMedicamento.equals("") || validadeMedicamento.equals("")) {
+					JOptionPane.showMessageDialog(null, "Campos não preenchidos", "Erro no Cadastro do Medicamento",
+							JOptionPane.ERROR_MESSAGE);
+				} else if (preco.compareTo(new BigDecimal("0")) != 1) {
+					JOptionPane.showMessageDialog(null, "Valor Nulo para o Preço", "Erro no Cadastro do Medicamento",
+							JOptionPane.ERROR_MESSAGE);
+				} else {
+					try {
+						ValidaData.validaDataComExcecao(validadeMedicamento.split("/")[0],validadeMedicamento.split("/")[1],validadeMedicamento.split("/")[2]);
+						m.setNomeMedicamento(nomeMedicamento);
+						m.setDescricaoMedicamento(descricaoMedicamento);
+						m.setValidadeMedicamento(validadeMedicamento);
+						m.setPrecoMedicamento(preco);
+						MedicamentoDAO medicamentoDao = new MedicamentoDAO();
+						medicamentoDao.update(m);
+						dialog.dispose();
+						JOptionPane.showMessageDialog(null, "Atualizado com sucesso!");
+					} catch (DataDdMmYyyyInvalida | DataDigitadaInvalidaException ex) {
+						JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro no Cadastro do Medicamento",
+								JOptionPane.ERROR_MESSAGE);
+					} catch (Exception ex2) {
+						JOptionPane.showMessageDialog(null, "Erro ao cadastrar Cliente:",
+								"Erro no Cadastro do Medicamento", JOptionPane.ERROR_MESSAGE);
+					}
+				}
 			}
 		});
 		cancelButton.addActionListener(new ActionListener() {
@@ -183,8 +245,10 @@ public class TelaListarMedicamentos extends JInternalFrame {
 		
 		buttonPane.add(okButton);
 		buttonPane.add(cancelButton);
+		jpanelAlterar.add(buttonPane, BorderLayout.SOUTH);
 		dialog.add(jpanelAlterar,BorderLayout.CENTER);
-		dialog.add(buttonPane, BorderLayout.SOUTH);
+		
+		
 		
         //Centralizando a dialog no centro da tela
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
