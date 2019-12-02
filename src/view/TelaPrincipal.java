@@ -13,6 +13,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import model.bean.Usuario;
+import javax.swing.SwingConstants;
 
 public class TelaPrincipal extends JFrame {
 	
@@ -107,6 +108,45 @@ public class TelaPrincipal extends JFrame {
 			}
 		});
 		mnEstoque.add(mntmGerenciarEstoque);
+		
+		JMenu mnCaixa = new JMenu("Caixa");
+		menuBar.add(mnCaixa);
+		
+		JMenuItem mntmAberturaDeCaixa = new JMenuItem("Abertura de Caixa");
+		mntmAberturaDeCaixa.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				
+				//abertura do caixa
+			}
+		});
+		mntmAberturaDeCaixa.setHorizontalAlignment(SwingConstants.TRAILING);
+		mnCaixa.add(mntmAberturaDeCaixa);
+		
+		JMenu mnVenda = new JMenu("Venda");
+		menuBar.add(mnVenda);
+		
+		JMenu mnOpces = new JMenu("Opc\u00F5es");
+		menuBar.add(mnOpces);
+		
+		JMenuItem mntmSairDoSistema = new JMenuItem("Sair do Sistema");
+		mntmSairDoSistema.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaLogin window = new TelaLogin();
+				dispose();
+			}
+		});
+		mnOpces.add(mntmSairDoSistema);
+		
+		JMenuItem mntmFechamentoDeCaixa = new JMenuItem("Fechamento de Caixa");
+		mntmFechamentoDeCaixa.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//fechamento do caixa
+			}
+		});
+		if (usuario.getTipoUsuario().equals("G")) { // apenas para o gerente
+			mnCaixa.add(mntmFechamentoDeCaixa);
+		}	
+		
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);

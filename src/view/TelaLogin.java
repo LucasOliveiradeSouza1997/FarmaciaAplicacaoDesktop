@@ -45,15 +45,6 @@ public class TelaLogin {
 			public void run() {
 				try {
 					TelaLogin window = new TelaLogin();
-					window.frame.setTitle("Farmácia Express - Login");
-					try {
-						window.frame.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
-			        } catch (NullPointerException ex) {
-			        	System.out.println("nao encontrou o icone");
-			        }
-					window.frame.setResizable(false);
-					window.frame.setLocationRelativeTo(null);
-					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -72,10 +63,20 @@ public class TelaLogin {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
+		frame.setTitle("Farmácia Express - Login");
+		try {
+			frame.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
+        } catch (NullPointerException ex) {
+        	System.out.println("nao encontrou o icone");
+        }
+		frame.setResizable(false);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
 		
 		JLabel lblLogin = new JLabel("login");
 		lblLogin.setBounds(253, 26, 46, 14);
