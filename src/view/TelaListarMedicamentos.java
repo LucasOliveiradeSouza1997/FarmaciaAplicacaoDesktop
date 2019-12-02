@@ -1,6 +1,7 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Toolkit;
@@ -11,10 +12,13 @@ import java.math.BigDecimal;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
 import model.DAO.MedicamentoDAO;
@@ -122,6 +126,7 @@ public class TelaListarMedicamentos extends JInternalFrame {
         dialog.pack();
         dialog.setModal(true);
         dialog.setFocusable(true);
+		dialog.setLayout(null);
         try {
 			dialog.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
         } catch (NullPointerException ex) {
@@ -129,9 +134,39 @@ public class TelaListarMedicamentos extends JInternalFrame {
         }
         
         JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        JPanel jpanelAlterar = new JPanel();
+//        jpanelAlterar.setLayout(new BorderLayout());
+        jpanelAlterar.setBorder(new EmptyBorder(5, 5, 5, 5));
+        
+        jpanelAlterar.setBounds(0, 0, dialog.getWidth(), dialog.getHeight());
+        
+        System.out.println( dialog.getWidth() +" : "+ dialog.getHeight());
+        
+		JLabel lblNomeMedicamento = new JLabel("Nome do Medicamento");
+		lblNomeMedicamento.setBounds(0, 0, 150, 30);
+		jpanelAlterar.add(lblNomeMedicamento);
+		
+		JTextField txtNomeMedicamento = new JTextField();
+		txtNomeMedicamento.setBounds(150, 0, 400, 30);
+		jpanelAlterar.add(txtNomeMedicamento);
+		
+		JLabel lblDescricaoMedicamento = new JLabel("Descri\u00E7\u00E3o do Medicamento");
+		lblDescricaoMedicamento.setBounds(0, 30, 150, 30);
+		jpanelAlterar.add(lblDescricaoMedicamento);
+
+		JTextField txtDescricaoMedicamento = new JTextField();
+		txtDescricaoMedicamento.setBounds(150, 30, 400, 30);
+		jpanelAlterar.add(txtDescricaoMedicamento);
+		
+		JLabel lblPreco = new JLabel("Pre\u00E7o do Medicamento");
+//		lblPreco.setBounds(0, 60, 150, 30);
+		lblPreco.setBounds(0, 0, 100, 30);
+
+		jpanelAlterar.add(lblPreco);
+		
 		JButton okButton = new JButton("OK");
 		JButton cancelButton = new JButton("Cancel");
-		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MedicamentoDAO medicamentoDao = new MedicamentoDAO();
@@ -145,13 +180,15 @@ public class TelaListarMedicamentos extends JInternalFrame {
 				dialog.dispose();
 			}
 		});
+		
 		buttonPane.add(okButton);
 		buttonPane.add(cancelButton);
+		dialog.add(jpanelAlterar,BorderLayout.CENTER);
 		dialog.add(buttonPane, BorderLayout.SOUTH);
 		
         //Centralizando a dialog no centro da tela
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        dialog.setLocation((int) (d.getWidth() - dialog.getWidth()) / 2, (int) (d.getHeight() - dialog.getHeight()) / 2);
+        dialog.setLocation((int) (d.getWidth() - dialog.getWidth()) / 2, (int) (d.getHeight() - dialog.getHeight()) / 2);  
         dialog.setVisible(true);
 	}
 }
