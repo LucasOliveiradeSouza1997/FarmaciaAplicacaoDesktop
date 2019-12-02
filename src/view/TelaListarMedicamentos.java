@@ -248,8 +248,6 @@ public class TelaListarMedicamentos extends JInternalFrame {
 		jpanelAlterar.add(buttonPane, BorderLayout.SOUTH);
 		dialog.add(jpanelAlterar,BorderLayout.CENTER);
 		
-		
-		
         //Centralizando a dialog no centro da tela
         java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         dialog.setLocation((int) (d.getWidth() - dialog.getWidth()) / 2, (int) (d.getHeight() - dialog.getHeight()) / 2);  
