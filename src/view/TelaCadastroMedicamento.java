@@ -59,7 +59,6 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 		getContentPane().add(lblPreco);
 
 		JNumberFormatField txtPreco = new JNumberFormatField();
-//		JNumberFormatField txtQuantidade = new JNumberFormatField();
 		txtPreco.setLimit(6);
 		txtPreco.setBounds(160, 105, 150, 30);
 		getContentPane().add(txtPreco);

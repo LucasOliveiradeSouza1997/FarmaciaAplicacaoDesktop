@@ -140,4 +140,31 @@ public class MedicamentoDAO {
 		}
 		return medicamentos;
 	}
+
+	public void update(Medicamento m) {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		try {
+			ps = conexao.prepareStatement("UPDATE medicamento SET nomeMedicamento=?,descricaoMedicamento=?,"
+					+ "precoMedicamento=?,validadeMedicamento=? WHERE idMedicamento = ?");
+			
+			ps.setString(1, m.getNomeMedicamento());
+			ps.setString(2, m.getDescricaoMedicamento());
+			ps.setBigDecimal(3, m.getPrecoMedicamento());
+			ps.setDate(4, new java.sql.Date(m.getValidadeMedicamento().getTime()));
+			ps.setInt(5, m.getIdMedicamento());
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException e) {
+				throw new DAOException(e.getMessage());
+			}
+		}
+	}
 }
