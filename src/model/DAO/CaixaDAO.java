@@ -109,6 +109,7 @@ public class CaixaDAO {
 			if (rs.next()) {
 				CaixaDisponivel caixaDisponivel = new CaixaDisponivel();
 				caixaDisponivel.setIdCaixaDisponivel(rs.getInt("caixaDisponivel.idCaixaDisponivel"));
+				caixa.setIdCaixa(rs.getInt("caixa.idCaixa"));
 				caixa.setCaixaDisponivel(caixaDisponivel);
 				caixa.setValorInicial(rs.getBigDecimal("caixa.valorInicial"));
 				caixa.setValorCartao(rs.getBigDecimal("caixa.valorCartao"));
@@ -126,5 +127,38 @@ public class CaixaDAO {
 			}
 		}
 		return caixa;
+	}
+
+	public void updateCaixaFechamento(Caixa c) {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try {
+			ps = conexao.prepareStatement("UPDATE caixa SET valorCaixaFechado = ?,status=? WHERE idCaixa = ?");
+			ps.setBigDecimal(1, c.getValorCaixaFechado());
+			ps.setBoolean(2, c.isStatus());
+			ps.setInt(3, c.getIdCaixa());
+			ps.executeUpdate();
+			ps.close();
+			ps = conexao.prepareStatement("UPDATE caixaDisponivel SET utilizando = ? WHERE idCaixaDisponivel = ?");
+			ps.setBoolean(1, c.getCaixaDisponivel().isUtilizando());
+			ps.setInt(2, c.getCaixaDisponivel().getIdCaixaDisponivel());
+			ps.executeUpdate();
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+				if (rs != null) {
+					rs.close();
+				}
+			} catch (SQLException ex2) {
+				throw new DAOException(ex2.getMessage());
+			}
+		}
+		
 	}
 }

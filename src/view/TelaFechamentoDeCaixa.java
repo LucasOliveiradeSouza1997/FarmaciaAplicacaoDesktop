@@ -26,6 +26,7 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 	private JTable table;
 	JNumberFormatField txtCaixaInicial;
 	JComboBox<Integer> comboBox ;
+	JLabel txtIdCaixa;
 
 	public TelaFechamentoDeCaixa() {
 		setVisible(true);
@@ -37,6 +38,10 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 		JLabel lblNumeroCaixa = new JLabel("Numero do Caixa");
 		lblNumeroCaixa.setBounds(10, 22, 150, 30);
 		getContentPane().add(lblNumeroCaixa);
+		
+		txtIdCaixa = new JLabel("");
+		txtIdCaixa.setBounds(438, 22, 46, 30);
+		getContentPane().add(txtIdCaixa);
 		
 		comboBox = new JComboBox<Integer>();
 		comboBox.addActionListener(new ActionListener() {
@@ -100,7 +105,7 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 				String caixaAtualUsuario = txtTotalCaixa.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".").replaceAll(" ", "");
 				String caixaInicio = txtCaixaInicial.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".").replaceAll(" ", "");
 				int numeroCaixa = Integer.parseInt(comboBox.getSelectedItem().toString());
-				
+				int idCaixa = Integer.parseInt(txtIdCaixa.getText().toString());
 				BigDecimal soma = new BigDecimal("0.0");
 				BigDecimal dinheiroCaixa = new BigDecimal(dinheiro);
 				BigDecimal cartaoCaixa = new BigDecimal(cartao);
@@ -112,7 +117,18 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 					if (caixaAtual.compareTo(soma)<0) { //caixa Atual com menos dinheiro que o caixa antes de abrir + valores das vendas(cartoes e dinheiro)
 						throw new FechamentoCaixaException("Caixa Atual com Valor Menor que o Correto! Valor Correto seria: RS " + soma.toString());
 					}
-					//continuar a inclusao
+					Caixa caixa = new Caixa();
+					CaixaDisponivel caixaDisponivel = new CaixaDisponivel();
+					caixaDisponivel.setIdCaixaDisponivel(numeroCaixa);
+					caixaDisponivel.setUtilizando(false);
+					caixa.setIdCaixa(idCaixa);
+					caixa.setCaixaDisponivel(caixaDisponivel);
+					caixa.setValorCaixaFechado(soma);
+					caixa.setStatus(false);
+					CaixaDAO caixaDao = new CaixaDAO();
+					caixaDao.updateCaixaFechamento(caixa);
+					dispose();
+					JOptionPane.showMessageDialog(null, "Caixa "+ caixa.getCaixaDisponivel().getIdCaixaDisponivel()+ " fechado com sucesso!");
 				} catch (FechamentoCaixaException ex) {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro no Fechamento do Caixa",
 							JOptionPane.ERROR_MESSAGE);
@@ -129,6 +145,11 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 		JLabel lblCaixaInicial = new JLabel("Caixa Inicial");
 		lblCaixaInicial.setBounds(10, 155, 150, 30);
 		getContentPane().add(lblCaixaInicial);
+		
+		JLabel lblIdCaixa = new JLabel("Id Caixa");
+		lblIdCaixa.setBounds(382, 22, 46, 30);
+		getContentPane().add(lblIdCaixa);
+		
 	}
 	
 	private void atualizarTabelaCaixa() {
@@ -151,6 +172,7 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 		}
 		try {
 			txtCaixaInicial.setText(c.getValorInicial().toString());
+			txtIdCaixa.setText(Integer.toString(c.getIdCaixa()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
