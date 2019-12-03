@@ -77,7 +77,7 @@ public class TelaAberturaDeCaixa extends JInternalFrame {
 		btnConfirmar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				String totalCaixa = txtTotalCaixa.getText().replace("R$", "").replace("[.]", "").replace(",", ".").replaceAll(" ", "");
+				String totalCaixa = txtTotalCaixa.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".").replaceAll(" ", "");
 				String dataDeABertura = txtDataAbertura.getText();
 				BigDecimal caixa = new BigDecimal(totalCaixa);
 				int numeroCaixa ;

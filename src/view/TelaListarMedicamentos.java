@@ -204,7 +204,7 @@ public class TelaListarMedicamentos extends JInternalFrame {
 				String nomeMedicamento = txtNomeMedicamento.getText();
 				String descricaoMedicamento = txtDescricaoMedicamento.getText();
 
-				String precoMedicamento = txtPreco.getText().replace("R$", "").replace("[.]", "").replace(",", ".").replaceAll(" ", "");
+				String precoMedicamento = txtPreco.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".").replaceAll(" ", "");
 				String validadeMedicamento = txtValidade.getText();
 
 				BigDecimal preco = new BigDecimal(precoMedicamento);

@@ -103,7 +103,7 @@ public class TelaCadastroMedicamento extends JInternalFrame {
 				String descricaoMedicamento = txtDescricaoMedicamento.getText();
 				String distribuidor = txtDistribuidor.getText();
 
-				String precoMedicamento = txtPreco.getText().replace("R$", "").replace("[.]", "").replace(",", ".").replaceAll(" ", "");
+				String precoMedicamento = txtPreco.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".").replaceAll(" ", "");
 				String validadeMedicamento = txtValidade.getText();
 				int quantidade = Integer.parseInt(txtQuantidade.getText());
 

@@ -1,9 +1,11 @@
 package view;
 
-import java.beans.PropertyVetoException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.math.BigDecimal;
 
+import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDesktopPane;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -17,15 +19,12 @@ import model.DAO.CaixaDAO;
 import model.DAO.CaixaDisponivelDAO;
 import model.bean.Caixa;
 import model.bean.CaixaDisponivel;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 
 public class TelaFechamentoDeCaixa extends JInternalFrame {
 
 	private static final long serialVersionUID = -797226049952510024L;
 	private JTable table;
+	JNumberFormatField txtCaixaInicial;
 	JComboBox<Integer> comboBox ;
 
 	public TelaFechamentoDeCaixa() {
@@ -75,6 +74,13 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 				return canEdit[columnIndex];
 			}
 		});
+		
+		txtCaixaInicial = new JNumberFormatField();
+		txtCaixaInicial.setLimit(6);
+		txtCaixaInicial.setBounds(170, 155, 150, 30);
+		txtCaixaInicial.setEnabled(false);
+		getContentPane().add(txtCaixaInicial);
+		
 		atualizarTabelaCaixa();
 		
 		JLabel lblTotalCaixa = new JLabel("Total do Caixa");
@@ -85,6 +91,44 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 		txtTotalCaixa.setLimit(6);
 		txtTotalCaixa.setBounds(170, 182, 150, 30);
 		getContentPane().add(txtTotalCaixa);
+		
+		JButton btnConfirmar = new JButton("Confirmar");
+		btnConfirmar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String dinheiro = table.getModel().getValueAt(0,1).toString().replace("R$", "").replaceAll(",", ".").replaceAll(" ", "");
+				String cartao = table.getModel().getValueAt(1,1).toString().replace("R$", "").replaceAll(",", ".").replaceAll(" ", "");
+				String caixaAtualUsuario = txtTotalCaixa.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".").replaceAll(" ", "");
+				String caixaInicio = txtCaixaInicial.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".").replaceAll(" ", "");
+				int numeroCaixa = Integer.parseInt(comboBox.getSelectedItem().toString());
+				
+				BigDecimal soma = new BigDecimal("0.0");
+				BigDecimal dinheiroCaixa = new BigDecimal(dinheiro);
+				BigDecimal cartaoCaixa = new BigDecimal(cartao);
+				BigDecimal caixaAtual = new BigDecimal(caixaAtualUsuario);
+				BigDecimal caixaInicial = new BigDecimal(caixaInicio);
+				
+				soma = soma.add(dinheiroCaixa).add(cartaoCaixa).add(caixaInicial);
+				try {
+					if (caixaAtual.compareTo(soma)<0) { //caixa Atual com menos dinheiro que o caixa antes de abrir + valores das vendas(cartoes e dinheiro)
+						throw new FechamentoCaixaException("Caixa Atual com Valor Menor que o Correto! Valor Correto seria: RS " + soma.toString());
+					}
+					//continuar a inclusao
+				} catch (FechamentoCaixaException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro no Fechamento do Caixa",
+							JOptionPane.ERROR_MESSAGE);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					JOptionPane.showMessageDialog(null, "Erro no Fechamento do Caixa",
+							"Erro no Fechamento do Caixa", JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		btnConfirmar.setBounds(10, 236, 90, 30);
+		getContentPane().add(btnConfirmar);
+		
+		JLabel lblCaixaInicial = new JLabel("Caixa Inicial");
+		lblCaixaInicial.setBounds(10, 155, 150, 30);
+		getContentPane().add(lblCaixaInicial);
 	}
 	
 	private void atualizarTabelaCaixa() {
@@ -104,6 +148,11 @@ public class TelaFechamentoDeCaixa extends JInternalFrame {
 		String[] linha2 = {"R$ " + c.getValorDinheiro(), "R$" + c.getValorCartao()};
 		for(int i=0; i<2;i++) {
 			modelo.addRow(new Object[] {linha1[i],linha2[i]});
+		}
+		try {
+			txtCaixaInicial.setText(c.getValorInicial().toString());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 }
