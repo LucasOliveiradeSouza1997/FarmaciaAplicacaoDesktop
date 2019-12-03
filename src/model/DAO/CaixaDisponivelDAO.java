@@ -41,4 +41,34 @@ public class CaixaDisponivelDAO {
 		}
 		return caixasDisponiveis;
 	}
+
+	public List<CaixaDisponivel> readCaixasAbertos() {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		List<CaixaDisponivel> caixasDisponiveis = new ArrayList<>();
+
+		try {
+			ps = conexao.prepareStatement("SELECT * FROM caixaDisponivel WHERE utilizando=true");
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				CaixaDisponivel caixaDisponivel = new CaixaDisponivel();
+				caixaDisponivel.setIdCaixaDisponivel(rs.getInt("idCaixaDisponivel"));
+				caixaDisponivel.setUtilizando(rs.getBoolean("utilizando"));
+				caixasDisponiveis.add(caixaDisponivel);
+			}
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+				throw new DAOException(e.getMessage());
+			}
+		}
+		return caixasDisponiveis;
+	}
 }

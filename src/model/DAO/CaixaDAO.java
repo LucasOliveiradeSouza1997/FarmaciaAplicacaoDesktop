@@ -12,7 +12,6 @@ import Exception.AberturaCaixaException;
 import Exception.DAOException;
 import model.bean.Caixa;
 import model.bean.CaixaDisponivel;
-import model.bean.Cliente;
 
 public class CaixaDAO {
 
@@ -21,7 +20,8 @@ public class CaixaDAO {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
-			ps = conexao.prepareStatement("SELECT * FROM caixaDisponivel WHERE idCaixaDisponivel=? AND utilizando=false");
+			ps = conexao
+					.prepareStatement("SELECT * FROM caixaDisponivel WHERE idCaixaDisponivel=? AND utilizando=false");
 			ps.setInt(1, c.getCaixaDisponivel().getIdCaixaDisponivel());
 			rs = ps.executeQuery();
 			if (!rs.next()) {
@@ -30,14 +30,14 @@ public class CaixaDAO {
 			ps.close();
 			rs.close();
 			ps = conexao.prepareStatement(
-					"INSERT INTO caixa(idCaixaDisponivel,dataCaixa,horaCaixa,valorInicial,valorCartao,valorDinheiro,status) VALUES(?,?,CURTIME( ),?,'0','0',?)");
+					"INSERT INTO caixa(idCaixaDisponivel,dataCaixa,horaCaixa,valorInicial,valorCartao,valorDinheiro,valorCaixaFechado,status) VALUES(?,?,CURTIME( ),?,'0','0','0',?)");
 			ps.setInt(1, c.getCaixaDisponivel().getIdCaixaDisponivel());
 			ps.setDate(2, new java.sql.Date(c.getDataCaixa().getTime()));
 			ps.setBigDecimal(3, c.getValorInicial());
 			ps.setBoolean(4, c.isStatus());
 			ps.executeUpdate();
 			ps.close();
-			
+
 			ps = conexao.prepareStatement("UPDATE caixaDisponivel SET utilizando = true WHERE idCaixaDisponivel = ?");
 			ps.setInt(1, c.getCaixaDisponivel().getIdCaixaDisponivel());
 			ps.executeUpdate();
@@ -59,38 +59,72 @@ public class CaixaDAO {
 	}
 
 	public List<Caixa> readCaixasAbertos() {
-        Connection conexao = ConnectionFactory.getConnection();
-        
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+		Connection conexao = ConnectionFactory.getConnection();
 
-        List<Caixa> caixasAbertos = new ArrayList<>();
-        try {
-            ps = conexao.prepareStatement("SELECT * from caixa INNER JOIN caixaDisponivel ON caixa.idCaixaDisponivel=caixaDisponivel.idCaixaDisponivel WHERE caixa.status=true AND caixaDisponivel.utilizando=true ORDER BY caixa.idCaixaDisponivel ASC");
-            rs = ps.executeQuery();
+		PreparedStatement ps = null;
+		ResultSet rs = null;
 
-            while (rs.next()) {
-            	Caixa caixa = new Caixa();
-            	CaixaDisponivel caixaDisponivel = new CaixaDisponivel();
-            	caixaDisponivel.setIdCaixaDisponivel(rs.getInt("caixaDisponivel.idCaixaDisponivel"));
-            	caixa.setCaixaDisponivel(caixaDisponivel);
-            	caixa.setValorInicial(rs.getBigDecimal("caixa.valorInicial"));
-            	caixa.setValorCartao(rs.getBigDecimal("caixa.valorCartao"));
-            	caixa.setValorDinheiro(rs.getBigDecimal("caixa.valorDinheiro"));              
-                caixasAbertos.add(caixa);
-            }
+		List<Caixa> caixasAbertos = new ArrayList<>();
+		try {
+			ps = conexao.prepareStatement(
+					"SELECT * from caixa INNER JOIN caixaDisponivel ON caixa.idCaixaDisponivel=caixaDisponivel.idCaixaDisponivel WHERE caixa.status=true AND caixaDisponivel.utilizando=true ORDER BY caixa.idCaixaDisponivel ASC");
+			rs = ps.executeQuery();
 
-        } catch (SQLException ex) {
-            throw new DAOException(ex.getMessage());
-        } finally {
+			while (rs.next()) {
+				Caixa caixa = new Caixa();
+				CaixaDisponivel caixaDisponivel = new CaixaDisponivel();
+				caixaDisponivel.setIdCaixaDisponivel(rs.getInt("caixaDisponivel.idCaixaDisponivel"));
+				caixa.setCaixaDisponivel(caixaDisponivel);
+				caixa.setValorInicial(rs.getBigDecimal("caixa.valorInicial"));
+				caixa.setValorCartao(rs.getBigDecimal("caixa.valorCartao"));
+				caixa.setValorDinheiro(rs.getBigDecimal("caixa.valorDinheiro"));
+				caixasAbertos.add(caixa);
+			}
+
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
 			ConnectionFactory.closeConnection(conexao);
 			try {
 				ps.close();
 				rs.close();
 			} catch (SQLException e) {
-	            throw new DAOException(e.getMessage());
+				throw new DAOException(e.getMessage());
 			}
 		}
 		return caixasAbertos;
+	}
+
+	public Caixa readCaixaAberto(int numeroCaixa) {
+		Connection conexao = ConnectionFactory.getConnection();
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Caixa caixa = new Caixa();
+		try {
+			ps = conexao.prepareStatement(
+					"SELECT * from caixa INNER JOIN caixaDisponivel ON caixa.idCaixaDisponivel=caixaDisponivel.idCaixaDisponivel WHERE caixa.status=true AND caixaDisponivel.utilizando=true AND caixa.idCaixaDisponivel=?");
+			ps.setInt(1, numeroCaixa);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				CaixaDisponivel caixaDisponivel = new CaixaDisponivel();
+				caixaDisponivel.setIdCaixaDisponivel(rs.getInt("caixaDisponivel.idCaixaDisponivel"));
+				caixa.setCaixaDisponivel(caixaDisponivel);
+				caixa.setValorInicial(rs.getBigDecimal("caixa.valorInicial"));
+				caixa.setValorCartao(rs.getBigDecimal("caixa.valorCartao"));
+				caixa.setValorDinheiro(rs.getBigDecimal("caixa.valorDinheiro"));
+			}
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+				throw new DAOException(e.getMessage());
+			}
+		}
+		return caixa;
 	}
 }

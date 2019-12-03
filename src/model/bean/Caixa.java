@@ -17,6 +17,7 @@ public class Caixa {
 	BigDecimal valorInicial;
 	BigDecimal valorCartao;
 	BigDecimal valorDinheiro;
+	BigDecimal valorCaixaFechado;
 	boolean status;
 	private SimpleDateFormat formatoDDMMYYYY;
 	
@@ -88,5 +89,13 @@ public class Caixa {
 
 	public void setValorDinheiro(BigDecimal valorDinheiro) {
 		this.valorDinheiro = valorDinheiro;
+	}
+
+	public BigDecimal getValorCaixaFechado() {
+		return valorCaixaFechado;
+	}
+
+	public void setValorCaixaFechado(BigDecimal valorCaixaFechado) {
+		this.valorCaixaFechado = valorCaixaFechado;
 	}
 }

@@ -9,6 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -120,7 +121,6 @@ public class TelaPrincipal extends JFrame {
 				aberturaDeCaixa.setVisible(true);
 			}
 		});
-		mntmAberturaDeCaixa.setHorizontalAlignment(SwingConstants.TRAILING);
 		mnCaixa.add(mntmAberturaDeCaixa);
 		
 		JMenuItem mntmCaixasAbertos = new JMenuItem("Caixas Abertos");
@@ -151,7 +151,13 @@ public class TelaPrincipal extends JFrame {
 		JMenuItem mntmFechamentoDeCaixa = new JMenuItem("Fechamento de Caixa");
 		mntmFechamentoDeCaixa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//fechamento do caixa
+				try {
+					TelaFechamentoDeCaixa telaFechamentoDeCaixa = new TelaFechamentoDeCaixa();
+					desktopPane.add(telaFechamentoDeCaixa);
+				} catch (Exception e2) {
+					JOptionPane.showMessageDialog(null, e2.getMessage(),
+							"Erro no fechamento do Caixa", JOptionPane.ERROR_MESSAGE);
+				}
 			}
 		});
 		if (usuario.getTipoUsuario().equals("G")) { // apenas para o gerente
