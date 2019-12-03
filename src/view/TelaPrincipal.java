@@ -123,6 +123,16 @@ public class TelaPrincipal extends JFrame {
 		mntmAberturaDeCaixa.setHorizontalAlignment(SwingConstants.TRAILING);
 		mnCaixa.add(mntmAberturaDeCaixa);
 		
+		JMenuItem mntmCaixasAbertos = new JMenuItem("Caixas Abertos");
+		mntmCaixasAbertos.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaCaixasAbertos telaCaixasAbertos = new TelaCaixasAbertos();
+				desktopPane.add(telaCaixasAbertos);
+				telaCaixasAbertos.setVisible(true);
+			}
+		});
+		mnCaixa.add(mntmCaixasAbertos);
+		
 		JMenu mnVenda = new JMenu("Venda");
 		menuBar.add(mnVenda);
 		

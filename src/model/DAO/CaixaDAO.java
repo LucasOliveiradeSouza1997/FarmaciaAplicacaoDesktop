@@ -4,11 +4,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import ConnectionFactory.ConnectionFactory;
 import Exception.AberturaCaixaException;
 import Exception.DAOException;
 import model.bean.Caixa;
+import model.bean.CaixaDisponivel;
+import model.bean.Cliente;
 
 public class CaixaDAO {
 
@@ -18,6 +22,7 @@ public class CaixaDAO {
 		ResultSet rs = null;
 		try {
 			ps = conexao.prepareStatement("SELECT * FROM caixaDisponivel WHERE idCaixaDisponivel=? AND utilizando=false");
+			ps.setInt(1, c.getCaixaDisponivel().getIdCaixaDisponivel());
 			rs = ps.executeQuery();
 			if (!rs.next()) {
 				throw new AberturaCaixaException("Caixa já aberto !");
@@ -25,7 +30,7 @@ public class CaixaDAO {
 			ps.close();
 			rs.close();
 			ps = conexao.prepareStatement(
-					"INSERT INTO caixa(idCaixaDisponivel,dataCaixa,horaCaixa,valorInicial,status) VALUES(?,?,CURTIME( ),?,?)");
+					"INSERT INTO caixa(idCaixaDisponivel,dataCaixa,horaCaixa,valorInicial,valorCartao,valorDinheiro,status) VALUES(?,?,CURTIME( ),?,'0','0',?)");
 			ps.setInt(1, c.getCaixaDisponivel().getIdCaixaDisponivel());
 			ps.setDate(2, new java.sql.Date(c.getDataCaixa().getTime()));
 			ps.setBigDecimal(3, c.getValorInicial());
@@ -53,4 +58,39 @@ public class CaixaDAO {
 		}
 	}
 
+	public List<Caixa> readCaixasAbertos() {
+        Connection conexao = ConnectionFactory.getConnection();
+        
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        List<Caixa> caixasAbertos = new ArrayList<>();
+        try {
+            ps = conexao.prepareStatement("SELECT * from caixa INNER JOIN caixaDisponivel ON caixa.idCaixaDisponivel=caixaDisponivel.idCaixaDisponivel WHERE caixa.status=true AND caixaDisponivel.utilizando=true ORDER BY caixa.idCaixaDisponivel ASC");
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+            	Caixa caixa = new Caixa();
+            	CaixaDisponivel caixaDisponivel = new CaixaDisponivel();
+            	caixaDisponivel.setIdCaixaDisponivel(rs.getInt("caixaDisponivel.idCaixaDisponivel"));
+            	caixa.setCaixaDisponivel(caixaDisponivel);
+            	caixa.setValorInicial(rs.getBigDecimal("caixa.valorInicial"));
+            	caixa.setValorCartao(rs.getBigDecimal("caixa.valorCartao"));
+            	caixa.setValorDinheiro(rs.getBigDecimal("caixa.valorDinheiro"));              
+                caixasAbertos.add(caixa);
+            }
+
+        } catch (SQLException ex) {
+            throw new DAOException(ex.getMessage());
+        } finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+	            throw new DAOException(e.getMessage());
+			}
+		}
+		return caixasAbertos;
+	}
 }

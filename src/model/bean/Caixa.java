@@ -15,6 +15,8 @@ public class Caixa {
 	Date dataCaixa;
 	Time horaCaixa;
 	BigDecimal valorInicial;
+	BigDecimal valorCartao;
+	BigDecimal valorDinheiro;
 	boolean status;
 	private SimpleDateFormat formatoDDMMYYYY;
 	
@@ -70,5 +72,21 @@ public class Caixa {
 	}
 	public void setStatus(boolean status) {
 		this.status = status;
+	}
+
+	public BigDecimal getValorCartao() {
+		return valorCartao;
+	}
+
+	public void setValorCartao(BigDecimal valorCartao) {
+		this.valorCartao = valorCartao;
+	}
+
+	public BigDecimal getValorDinheiro() {
+		return valorDinheiro;
+	}
+
+	public void setValorDinheiro(BigDecimal valorDinheiro) {
+		this.valorDinheiro = valorDinheiro;
 	}
 }
