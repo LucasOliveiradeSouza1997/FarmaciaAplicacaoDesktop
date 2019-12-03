@@ -27,7 +27,6 @@ public class MedicamentoDAO {
 			ps.setDate(5, new java.sql.Date(m.getValidadeMedicamento().getTime()));
 			ps.setBoolean(6, m.isStatusMedicamento());
 			ps.executeUpdate();
-			ps.close();
 		} catch (SQLException ex) {
 			throw new DAOException(ex.getMessage());
 		} finally {

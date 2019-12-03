@@ -115,8 +115,9 @@ public class TelaPrincipal extends JFrame {
 		JMenuItem mntmAberturaDeCaixa = new JMenuItem("Abertura de Caixa");
 		mntmAberturaDeCaixa.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				
-				//abertura do caixa
+				TelaAberturaDeCaixa aberturaDeCaixa = new TelaAberturaDeCaixa(usuario);
+				desktopPane.add(aberturaDeCaixa);
+				aberturaDeCaixa.setVisible(true);
 			}
 		});
 		mntmAberturaDeCaixa.setHorizontalAlignment(SwingConstants.TRAILING);

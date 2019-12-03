@@ -6,7 +6,11 @@ public class ValidaData {
 	
 	
 	public static void validaDataComExcecao(String dia, String mes, String ano) {
-		if (!validaData(dia,mes,ano)) {
+		try {
+			if (!validaData(dia,mes,ano)) {
+				throw new DataDigitadaInvalidaException("Data invalida");
+			}
+		} catch (NumberFormatException e) {
 			throw new DataDigitadaInvalidaException("Data invalida");
 		}
 	}
