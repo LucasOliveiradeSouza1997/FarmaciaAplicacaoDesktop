@@ -136,6 +136,46 @@ public class TelaPrincipal extends JFrame {
 		JMenu mnVenda = new JMenu("Venda");
 		menuBar.add(mnVenda);
 		
+		JMenuItem mntmRealizarVenda = new JMenuItem("Realizar Venda");
+		mntmRealizarVenda.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaRealizarVenda telaRealizarVenda = new TelaRealizarVenda(usuario);
+				desktopPane.add(telaRealizarVenda);
+				telaRealizarVenda.setVisible(true);
+			}
+		});
+		mnVenda.add(mntmRealizarVenda);
+		
+		JMenuItem mntmConsultarVendas = new JMenuItem("Consultar Vendas");
+		mntmConsultarVendas.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaConsultarVendas telaConsultarVendas = new TelaConsultarVendas();
+				desktopPane.add(telaConsultarVendas);
+				telaConsultarVendas.setVisible(true);
+			}
+		});
+		mnVenda.add(mntmConsultarVendas);
+		
+		JMenuItem mntmVendasComCartao = new JMenuItem("Vendas com Cart\u00E3o");
+		mntmVendasComCartao.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaVendasComCartao telaVendasComCartao = new TelaVendasComCartao();
+				desktopPane.add(telaVendasComCartao);
+				telaVendasComCartao.setVisible(true);
+			}
+		});
+		mnVenda.add(mntmVendasComCartao);
+		
+		JMenuItem mntmVendasEmDinheiro = new JMenuItem("Vendas em Dinheiro");
+		mntmVendasEmDinheiro.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				TelaVendasEmDinheiro telaVendasEmDinheiro = new TelaVendasEmDinheiro();
+				desktopPane.add(telaVendasEmDinheiro);
+				telaVendasEmDinheiro.setVisible(true);
+			}
+		});
+		mnVenda.add(mntmVendasEmDinheiro);
+		
 		JMenu mnOpces = new JMenu("Op\u00E7\u00F5es");
 		menuBar.add(mnOpces);
 		
