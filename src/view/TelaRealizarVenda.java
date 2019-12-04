@@ -112,7 +112,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 					}
 					String total = txtTotal.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".")
 							.replaceAll(" ", "");
-					 BigDecimal totalVenda = new BigDecimal(total);
+					BigDecimal totalVenda = new BigDecimal(total);
 					BigDecimal dinheiroCLiente = null;
 					BigDecimal troco = null;
 					// regras do preço(desconto)
@@ -134,7 +134,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 								throw new DinheiroClienteException("Valor Inválido Para o Dinheiro do Cliente");
 							}
 						}
-						System.out.println("aa"+ dinheiroCLiente);
+						System.out.println("aa" + dinheiroCLiente);
 						if (dinheiroCLiente.compareTo(totalVenda) < 0) {
 							throw new DinheiroClienteException("Dinheiro Insuficiente");
 						}
@@ -146,11 +146,12 @@ public class TelaRealizarVenda extends JInternalFrame {
 					CaixaDAO caixaDao = new CaixaDAO();
 					caixa = caixaDao.readCaixaAberto(numeroCaixa);
 
-					BigDecimal valorTotalEmCaixa = caixa.getValorInicial().add(caixa.getValorDinheiro());
-					if (valorTotalEmCaixa.compareTo(troco) < 0) {
-						throw new DinheiroCaixaException("Dinheiro Insuficiente no Caixa");
+					if (tipoPagamento.equals("D")) {
+						BigDecimal valorTotalEmCaixa = caixa.getValorInicial().add(caixa.getValorDinheiro());
+						if (valorTotalEmCaixa.compareTo(troco) < 0) {
+							throw new DinheiroCaixaException("Dinheiro Insuficiente no Caixa");
+						}
 					}
-
 					Cliente cliente = new Cliente();
 					ClienteDAO clienteDao = new ClienteDAO();
 					cliente = clienteDao.read(cpfCliente);
