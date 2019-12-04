@@ -144,7 +144,7 @@ public class TelaListarClientes extends JInternalFrame {
 					c.getEnderecoCliente(), maskTelefone(c.getTelefoneCLiente()), tipoCliente });
 		}
 	}
-
+	
 	public static String maskRg(String rg) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(rg.substring(0, 2)).append(".").append(rg.substring(2, 5)).append(".").append(rg.substring(5, 8))

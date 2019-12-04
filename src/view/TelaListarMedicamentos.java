@@ -72,7 +72,7 @@ public class TelaListarMedicamentos extends JInternalFrame {
 						m.setDescricaoMedicamento(table.getValueAt(table.getSelectedRow(), 2).toString());
 						m.setPrecoMedicamento(new BigDecimal(table.getValueAt(table.getSelectedRow(), 3).toString().replace("R$", "").replace("[.]", "").replace(",", ".").replaceAll(" ", "")));
 						m.setValidadeMedicamento(table.getValueAt(table.getSelectedRow(), 4).toString());
-												
+									
 				        if ((dialog == null) || (!(dialog.isVisible()))) {
 				            dialog = new JDialog();
 				            inicializaComponentesAlterar(dialog,m);   
