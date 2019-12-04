@@ -439,7 +439,18 @@ public class TelaRealizarVenda extends JInternalFrame {
 					precoMedicamentos = precoMedicamentos.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 					ve.setPreco(precoMedicamentos);
 					ve.setQuantidade(quantidadeUsuario);
-					vendaExibicao.add(ve);
+					int i=0;
+					boolean repetido=false;
+					for (VendaExibicao v : vendaExibicao) {
+						if (v.getId()== ve.getId()) {
+							repetido=true;
+							vendaExibicao.set(i, ve);
+							break;
+						}
+					}
+					if(!repetido) {
+						vendaExibicao.add(ve);
+					}
 				} catch (QuantidadeInvalidaMedicamentoEstoqueException ex) {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro ao Selecionar Medicamento",
 							JOptionPane.ERROR_MESSAGE);
