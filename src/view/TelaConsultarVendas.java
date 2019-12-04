@@ -24,6 +24,9 @@ public class TelaConsultarVendas extends JInternalFrame {
 	private static final long serialVersionUID = 2682277685220510392L;
 	private JTable table;
 	private JDialog dialog = null;
+	JRadioButton btnTodas ;
+	JRadioButton btnCartao ;
+	JRadioButton btnDinheiro ;
 
 	public TelaConsultarVendas() {
 		ButtonGroup buttonGroup = new ButtonGroup();
@@ -40,17 +43,17 @@ public class TelaConsultarVendas extends JInternalFrame {
 		lblAposentado.setBounds(10, 7, 102, 30);
 		getContentPane().add(lblAposentado);
 
-		JRadioButton btnTodas = new JRadioButton("Todas");
+		btnTodas = new JRadioButton("Todas");
 		buttonGroup.add(btnTodas);
 		btnTodas.setBounds(132, 7, 75, 30);
 		getContentPane().add(btnTodas);
 
-		JRadioButton btnCartao = new JRadioButton("Apenas Cartão");
+		btnCartao = new JRadioButton("Apenas Cartão");
 		buttonGroup.add(btnCartao);
 		btnCartao.setBounds(209, 7, 116, 30);
 		getContentPane().add(btnCartao);
 		
-		JRadioButton btnDinheiro = new JRadioButton("Apenas Dinheiro");
+		btnDinheiro = new JRadioButton("Apenas Dinheiro");
 		buttonGroup.add(btnDinheiro);
 		btnDinheiro.setBounds(327, 7, 128, 30);
 		getContentPane().add(btnDinheiro);
@@ -71,36 +74,92 @@ public class TelaConsultarVendas extends JInternalFrame {
 		JButton btnConsultar = new JButton("Consultar");
 		btnConsultar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String tipoConsulta="";
-				if (btnTodas.isSelected()) {
-					tipoConsulta="TODAS";
-				} else if (btnCartao.isSelected()) {
-					tipoConsulta="CARTAO";
-				} else if (btnDinheiro.isSelected()) {
-					tipoConsulta="DINHEIRO";
-				}else {
-					JOptionPane.showMessageDialog(null, "Selecione uma Opção", "Erro na Consulta das Vendas",
-							JOptionPane.ERROR_MESSAGE);
-				}
-				DefaultTableModel modelo = (DefaultTableModel) table.getModel();
-				modelo.getDataVector().removeAllElements();
-				modelo.fireTableDataChanged();
-				String tipoPagamento="";				
-				VendaDAO vendaDao = new VendaDAO();
-				for (Venda v : vendaDao.read(tipoConsulta)) {
-					if(v.getTipoPagamento().equals("C")) {
-						tipoPagamento="Cartão";
-					}else if(v.getTipoPagamento().equals("D")) {
-						tipoPagamento="Dinheiro";
-					}
-					modelo.addRow(new Object[] { 
-							v.getIdVenda(),v.getCliente().getCpfCliente(),v.getValorTotal(),tipoPagamento
-					});
-				}
-				
+				atualizarTabela();	
 			}
 		});
 		btnConsultar.setBounds(458, 7, 90, 30);
 		getContentPane().add(btnConsultar);
+		
+		JButton btnExpandir = new JButton("Expandir Itens Comprados");
+		btnExpandir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (table.getSelectedRow() != -1) {
+					try {
+						Venda venda = new Venda();
+						venda.setIdVenda(Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString()));
+				        if ((dialog == null) || (!(dialog.isVisible()))) {
+				            dialog = new JDialog();
+				            inicializaComponentesExpandir(dialog,venda);   
+				        }
+				        atualizarTabela();
+					} catch (Exception e) {
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Erro ao selecionar para visualizar os Produtos: " + e.getMessage());
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione uma venda para Visualizar os Produtos");
+				}
+			}
+		});
+		btnExpandir.setBounds(42, 460, 189, 30);
+		getContentPane().add(btnExpandir);
+		
+		JButton btnCancelar = new JButton("Cancelar");
+		btnCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				if (table.getSelectedRow() != -1) {
+					try {
+						Venda venda = new Venda();
+						venda.setIdVenda(Integer.parseInt(table.getValueAt(table.getSelectedRow(), 0).toString()));
+						DefaultTableModel dtmModelCliente = (DefaultTableModel) table.getModel();
+						VendaDAO vendaDao = new VendaDAO();
+						vendaDao.delete(venda);
+						dtmModelCliente.removeRow(table.getSelectedRow());
+						JOptionPane.showMessageDialog(null, "Cancelado com sucesso!");
+						atualizarTabela();
+					} catch (Exception e) {
+						e.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Erro ao cancelar venda:" + e.getMessage());
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione uma venda para Cancelar");
+				}
+			}
+		});
+		btnCancelar.setBounds(259, 460, 102, 30);
+		getContentPane().add(btnCancelar);
 	}
+	
+	private void atualizarTabela() {
+		String tipoConsulta="";
+		if (btnTodas.isSelected()) {
+			tipoConsulta="TODAS";
+		} else if (btnCartao.isSelected()) {
+			tipoConsulta="CARTAO";
+		} else if (btnDinheiro.isSelected()) {
+			tipoConsulta="DINHEIRO";
+		}else {
+			JOptionPane.showMessageDialog(null, "Selecione uma Opção", "Erro na Consulta das Vendas",
+					JOptionPane.ERROR_MESSAGE);
+		}
+		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+		modelo.getDataVector().removeAllElements();
+		modelo.fireTableDataChanged();
+		String tipoPagamento="";				
+		VendaDAO vendaDao = new VendaDAO();
+		for (Venda v : vendaDao.read(tipoConsulta)) {
+			if(v.getTipoPagamento().equals("C")) {
+				tipoPagamento="Cartão";
+			}else if(v.getTipoPagamento().equals("D")) {
+				tipoPagamento="Dinheiro";
+			}
+			modelo.addRow(new Object[] { 
+					v.getIdVenda(),v.getCliente().getCpfCliente(),v.getValorTotal(),tipoPagamento
+			});
+		}
+	}
+	private void inicializaComponentesExpandir(JDialog dialog, Venda venda) {
+		// TODO Auto-generated method stub
+		
+	}	
 }

@@ -12,6 +12,9 @@ import com.mysql.jdbc.Statement;
 import ConnectionFactory.ConnectionFactory;
 import Exception.DAOException;
 import model.bean.Cliente;
+import model.bean.Estoque;
+import model.bean.Medicamento;
+import model.bean.MedicamentoVenda;
 import model.bean.Venda;
 
 public class VendaDAO {
@@ -19,19 +22,21 @@ public class VendaDAO {
 	public int create(Venda v) {
 		Connection conexao = ConnectionFactory.getConnection();
 		PreparedStatement ps = null;
-		int id=0;
+		int id = 0;
 		try {
-			ps = conexao.prepareStatement("INSERT INTO venda(idCaixa,cpfCliente,numeroNotaFiscal,dataVenda,horaVenda,valorTotal,tipoPagamento,compraAtiva)VALUES(?,?,?,CURDATE(),CURTIME(),?,?,?)",Statement.RETURN_GENERATED_KEYS);
+			ps = conexao.prepareStatement(
+					"INSERT INTO venda(idCaixa,cpfCliente,numeroNotaFiscal,dataVenda,horaVenda,valorTotal,tipoPagamento,compraAtiva)VALUES(?,?,?,CURDATE(),CURTIME(),?,?,?)",
+					Statement.RETURN_GENERATED_KEYS);
 			ps.setInt(1, v.getCaixa().getIdCaixa());
 			ps.setString(2, v.getCliente().getCpfCliente());
 			ps.setString(3, v.getNumeroNotaFiscal());
 			ps.setBigDecimal(4, v.getValorTotal());
 			ps.setString(5, v.getTipoPagamento());
-			ps.setBoolean(6,v.isCompraAtiva());
+			ps.setBoolean(6, v.isCompraAtiva());
 			ps.executeUpdate();
 			final ResultSet rs = ps.getGeneratedKeys();
 			if (rs.next()) {
-			    id = rs.getInt(1);
+				id = rs.getInt(1);
 			}
 		} catch (SQLException ex) {
 			throw new DAOException(ex.getMessage());
@@ -89,5 +94,48 @@ public class VendaDAO {
 			}
 		}
 		return vendas;
+	}
+
+	public void delete(Venda venda) {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		PreparedStatement psMedicamentosVendas = null;
+		PreparedStatement psDesativaVenda = null;
+		try {
+			ps = conexao.prepareStatement("SELECT * FROM medicamentoVenda INNER JOIN medicamento ON medicamentoVenda.idMedicamento=medicamento.idMedicamento WHERE idVenda=?;");
+			ps.setInt(1, venda.getIdVenda());
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				MedicamentoVenda medicamentoVenda = new MedicamentoVenda();
+				medicamentoVenda.setIdVenda(rs.getInt("medicamentoVenda.idVenda"));
+				int lote = rs.getInt("medicamento.lote");
+				medicamentoVenda.setQuantidadeVendida(rs.getInt("medicamentoVenda.quantidadeVendida"));
+				psMedicamentosVendas = conexao.prepareStatement("UPDATE estoque SET quantidade=quantidade+? WHERE lote=?");
+				psMedicamentosVendas.setInt(1, medicamentoVenda.getQuantidadeVendida());
+				psMedicamentosVendas.setInt(2, lote);
+				psMedicamentosVendas.executeUpdate();
+				if(psMedicamentosVendas !=null) {
+					psMedicamentosVendas.close();
+				}
+			}
+			psDesativaVenda = conexao.prepareStatement("UPDATE venda SET compraAtiva=false WHERE idVenda=?");
+			psDesativaVenda.setInt(1, venda.getIdVenda());
+			psDesativaVenda.executeUpdate();
+			if(psDesativaVenda !=null) {
+				psDesativaVenda.close();
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException ex2) {
+				throw new DAOException(ex2.getMessage());
+			}
+		}
 	}
 }
