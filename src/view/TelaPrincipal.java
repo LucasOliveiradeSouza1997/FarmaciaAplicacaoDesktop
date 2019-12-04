@@ -156,26 +156,6 @@ public class TelaPrincipal extends JFrame {
 		});
 		mnVenda.add(mntmConsultarVendas);
 		
-		JMenuItem mntmVendasComCartao = new JMenuItem("Vendas com Cart\u00E3o");
-		mntmVendasComCartao.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TelaVendasComCartao telaVendasComCartao = new TelaVendasComCartao();
-				desktopPane.add(telaVendasComCartao);
-				telaVendasComCartao.setVisible(true);
-			}
-		});
-		mnVenda.add(mntmVendasComCartao);
-		
-		JMenuItem mntmVendasEmDinheiro = new JMenuItem("Vendas em Dinheiro");
-		mntmVendasEmDinheiro.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				TelaVendasEmDinheiro telaVendasEmDinheiro = new TelaVendasEmDinheiro();
-				desktopPane.add(telaVendasEmDinheiro);
-				telaVendasEmDinheiro.setVisible(true);
-			}
-		});
-		mnVenda.add(mntmVendasEmDinheiro);
-		
 		JMenu mnOpces = new JMenu("Op\u00E7\u00F5es");
 		menuBar.add(mnOpces);
 		
