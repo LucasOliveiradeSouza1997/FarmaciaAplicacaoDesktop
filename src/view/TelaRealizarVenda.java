@@ -30,6 +30,7 @@ import model.bean.CaixaDisponivel;
 import model.bean.Cliente;
 import model.bean.Usuario;
 import model.bean.Venda;
+import javax.swing.JTextField;
 
 public class TelaRealizarVenda extends JInternalFrame {
 
@@ -112,11 +113,24 @@ public class TelaRealizarVenda extends JInternalFrame {
 					}
 					String total = txtTotal.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".")
 							.replaceAll(" ", "");
-					BigDecimal totalVenda = new BigDecimal(total);
+//					BigDecimal totalVenda = new BigDecimal(total);
+					BigDecimal totalVenda = new BigDecimal("10");
 					BigDecimal dinheiroCLiente = null;
 					BigDecimal troco = null;
-					// regras do preço(desconto)
-
+					Cliente cliente = new Cliente();
+					ClienteDAO clienteDao = new ClienteDAO();
+					cliente = clienteDao.read(cpfCliente);
+					if(rdbtnDinheiro.isSelected() && cliente.getTipoCLiente().equals("N") && usuario.getTipoUsuario().equals("G")) {
+						totalVenda = totalVenda.multiply(new BigDecimal("0.95"));
+						totalVenda = totalVenda.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+						JOptionPane.showMessageDialog(null, "Desconto de 5% para clientes Normais com Pagamento Em Dinheiro,"
+								+ "valor a ser pago: R$ " + totalVenda.toString().replaceAll("[.]", ","));
+					}else if(cliente.getTipoCLiente().equals("E") && usuario.getTipoUsuario().equals("G")) {
+						totalVenda = totalVenda.multiply(new BigDecimal("0.80"));
+						totalVenda = totalVenda.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+						JOptionPane.showMessageDialog(null, "Desconto de 20% para clientes Aposentados,"
+								+ "valor a ser pago: R$ " + totalVenda.toString().replaceAll("[.]", ","));
+					}
 					if (rdbtnCartao.isSelected()) {
 						tipoPagamento = "C";
 					} else if (rdbtnDinheiro.isSelected()) {
@@ -152,9 +166,6 @@ public class TelaRealizarVenda extends JInternalFrame {
 							throw new DinheiroCaixaException("Dinheiro Insuficiente no Caixa");
 						}
 					}
-					Cliente cliente = new Cliente();
-					ClienteDAO clienteDao = new ClienteDAO();
-					cliente = clienteDao.read(cpfCliente);
 					Venda venda = new Venda();
 					venda.setCaixa(caixa);
 					venda.setCliente(cliente);
@@ -180,5 +191,19 @@ public class TelaRealizarVenda extends JInternalFrame {
 		});
 		btnConfirmar.setBounds(667, 455, 90, 30);
 		getContentPane().add(btnConfirmar);
+		
+		JLabel lblDesconto = new JLabel("Desconto");
+		lblDesconto.setBounds(10, 126, 150, 30);
+		getContentPane().add(lblDesconto);
+		
+		JLabel txtDesconto = new JLabel("");
+		txtDesconto.setBounds(168, 126, 589, 30);
+		getContentPane().add(txtDesconto);
+		
+		if (usuario.getTipoUsuario().equals("G")) {
+			txtDesconto.setText("Desconto de 20% para aposentado e Desconto de 5% para clientes normais com pagamento em dinheiro");
+		}else if (usuario.getTipoUsuario().equals("A")){
+			txtDesconto.setText("Os atendentes Não oferecem desconto");
+		}
 	}
 }
