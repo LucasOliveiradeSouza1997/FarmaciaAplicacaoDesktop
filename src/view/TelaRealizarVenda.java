@@ -286,7 +286,20 @@ public class TelaRealizarVenda extends JInternalFrame {
 		JButton btnRemover = new JButton("Remover");
 		btnRemover.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// remover
+				if (table.getSelectedRow() != -1) {
+					try {
+						DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+						totalVenda = totalVenda.subtract(new BigDecimal(table.getValueAt(table.getSelectedRow(), 5).toString()));
+						vendaExibicao.remove(table.getSelectedRow());
+						modelo.removeRow(table.getSelectedRow());
+						txtTotal.setText(totalVenda.toString());
+					} catch (Exception ex) {
+						ex.printStackTrace();
+						JOptionPane.showMessageDialog(null, "Erro ao remover: " + ex.getMessage());
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Selecione um produto para Remover");
+				}
 			}
 		});
 		btnRemover.setBounds(137, 405, 90, 30);
