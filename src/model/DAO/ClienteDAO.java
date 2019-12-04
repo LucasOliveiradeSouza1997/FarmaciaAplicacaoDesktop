@@ -12,6 +12,8 @@ import javax.swing.JOptionPane;
 import ConnectionFactory.ConnectionFactory;
 import Exception.ClienteNaoEncontradoException;
 import Exception.DAOException;
+import model.bean.Caixa;
+import model.bean.CaixaDisponivel;
 import model.bean.Cliente;
 
 public class ClienteDAO {
@@ -159,4 +161,32 @@ public class ClienteDAO {
 			}
 		}
     }
+
+	public Cliente read(String cpfCliente) {
+		Connection conexao = ConnectionFactory.getConnection();
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		Cliente c = new Cliente();
+		try {
+			ps = conexao.prepareStatement("SELECT * from cliente WHERE cpfCliente=?");
+			ps.setString(1, cpfCliente);
+			rs = ps.executeQuery();
+			if (rs.next()) {
+				c.setTipoCLiente(rs.getString("tipoCliente"));
+				c.setCpfCliente(rs.getString("cpfCliente"));
+			}
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+				throw new DAOException(e.getMessage());
+			}
+		}
+		return c;
+	}
 }

@@ -17,10 +17,12 @@ import javax.swing.JRadioButton;
 import Auxiliares.GerarNotaFiscal;
 import Auxiliares.JNumberFormatField;
 import Exception.ClienteNaoEncontradoException;
+import Exception.DinheiroClienteException;
 import Exception.FormaDePagamentoException;
 import model.DAO.CaixaDAO;
 import model.DAO.CaixaDisponivelDAO;
 import model.DAO.ClienteDAO;
+import model.DAO.VendaDAO;
 import model.bean.Caixa;
 import model.bean.CaixaDisponivel;
 import model.bean.Cliente;
@@ -109,36 +111,53 @@ public class TelaRealizarVenda extends JInternalFrame {
 					String total = txtTotal.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".")
 							.replaceAll(" ", "");
 					BigDecimal totalVenda = new BigDecimal(total);
+					BigDecimal dinheiroCLiente = null;
 					// regras do preço
 
 					if (rdbtnCartao.isSelected()) {
 						tipoPagamento = "C";
 					} else if (rdbtnDinheiro.isSelected()) {
+						boolean erroNoDinheiroCliente = false;
 						tipoPagamento = "D";
+						String dinheiroDoCliente = JOptionPane.showInputDialog("Digite o dinheiro dado pelo cliente:");
+						if (dinheiroDoCliente == null || dinheiroDoCliente.equals("")) {
+							erroNoDinheiroCliente = true;
+						} else {
+							dinheiroDoCliente = dinheiroDoCliente.replaceAll("R$", "").replaceAll(" ", "").replaceAll("[.]", "").replaceAll(",", ".");
+							try {
+								dinheiroCLiente = new BigDecimal(dinheiroDoCliente);
+								dinheiroCLiente = dinheiroCLiente.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+							} catch (Exception ex) {
+								erroNoDinheiroCliente = true;
+							}
+						}
+						if (erroNoDinheiroCliente) {
+							throw new DinheiroClienteException("Valor Inválido Para o Dinheiro do Cliente");
+						}
 					} else {
 						throw new FormaDePagamentoException("Não selecionou forma de pagamento");
 					}
-
 					Caixa caixa = new Caixa();
 					CaixaDAO caixaDao = new CaixaDAO();
 					caixa = caixaDao.readCaixaAberto(numeroCaixa);
 					Cliente cliente = new Cliente();
-					cliente.setCpfCliente(cpfCliente);
+					ClienteDAO clienteDao = new ClienteDAO();
+					cliente = clienteDao.read(cpfCliente);
 					Venda venda = new Venda();
 					venda.setCaixa(caixa);
 					venda.setCliente(cliente);
 					venda.setNumeroNotaFiscal(GerarNotaFiscal.geraNFe());
 					venda.setValorTotal(totalVenda);
 					venda.setTipoPagamento(tipoPagamento);
-
-					// subir a venda
+					VendaDAO vendaDao = new VendaDAO();
+					vendaDao.create(venda);
 					dispose();
 					JOptionPane.showMessageDialog(null, " Venda realizada com sucesso!");
 				} catch (NullPointerException ex) {
-					JOptionPane.showMessageDialog(null, "Numero do Caixa Nao Selecionado", "Erro na abertura do Caixa",
+					JOptionPane.showMessageDialog(null, "Numero do Caixa Nao Selecionado", "Erro na Venda",
 							JOptionPane.ERROR_MESSAGE);
-				} catch (FormaDePagamentoException ex) {
-					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro na abertura do Caixa",
+				} catch (FormaDePagamentoException | DinheiroClienteException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro na Venda",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
