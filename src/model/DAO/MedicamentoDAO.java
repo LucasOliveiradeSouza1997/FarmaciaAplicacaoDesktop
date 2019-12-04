@@ -13,6 +13,7 @@ import Exception.DAOException;
 import Exception.MedicamentoInvalidoException;
 import model.bean.Estoque;
 import model.bean.Medicamento;
+import model.bean.Venda;
 
 public class MedicamentoDAO {
 	public void create(Medicamento m) {
@@ -174,13 +175,13 @@ public class MedicamentoDAO {
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<Medicamento> medicamentos = new ArrayList<>();
-		boolean encontrouRegistros =false;
+		boolean encontrouRegistros = false;
 		try {
 			ps = conexao.prepareStatement(
 					"SELECT medicamento.idMedicamento, medicamento.lote, medicamento.nomeMedicamento, estoque.quantidade, estoque.distribuidor from medicamento inner join estoque on medicamento.lote = estoque.lote WHERE estoque.quantidade > 0 AND medicamento.validadeMedicamento>= NOW()");
 			rs = ps.executeQuery();
 			while (rs.next()) {
-				encontrouRegistros=true;
+				encontrouRegistros = true;
 				Medicamento medicamento = new Medicamento();
 				Estoque estoque = new Estoque();
 
@@ -192,7 +193,7 @@ public class MedicamentoDAO {
 				medicamento.setEstoque(estoque);
 				medicamentos.add(medicamento);
 			}
-			if(!encontrouRegistros) {
+			if (!encontrouRegistros) {
 				throw new MedicamentoInvalidoException("Nao encontrou medicamento para Venda");
 			}
 
@@ -213,20 +214,20 @@ public class MedicamentoDAO {
 		}
 		return medicamentos;
 	}
-	
+
 	public Medicamento readMedicamentosNaoVencidosComEstoque(int idMedicamento) {
 		Connection conexao = ConnectionFactory.getConnection();
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		Medicamento medicamento = null;
-		boolean encontrouRegistros =false;
+		boolean encontrouRegistros = false;
 		try {
 			ps = conexao.prepareStatement(
 					"SELECT medicamento.idMedicamento, medicamento.descricaoMedicamento, medicamento.precoMedicamento,medicamento.lote, medicamento.nomeMedicamento, estoque.quantidade, estoque.distribuidor from medicamento inner join estoque on medicamento.lote = estoque.lote WHERE estoque.quantidade > 0 AND medicamento.validadeMedicamento>= NOW() AND medicamento.idMedicamento=?");
 			ps.setInt(1, idMedicamento);
 			rs = ps.executeQuery();
 			if (rs.next()) {
-				encontrouRegistros=true;
+				encontrouRegistros = true;
 				medicamento = new Medicamento();
 				Estoque estoque = new Estoque();
 
@@ -239,7 +240,7 @@ public class MedicamentoDAO {
 				estoque.setDistribuidor(rs.getString("estoque.distribuidor"));
 				medicamento.setEstoque(estoque);
 			}
-			if(!encontrouRegistros) {
+			if (!encontrouRegistros) {
 				throw new MedicamentoInvalidoException("Nao encontrou medicamento para Venda");
 			}
 
@@ -259,5 +260,45 @@ public class MedicamentoDAO {
 			}
 		}
 		return medicamento;
+	}
+	
+	public List<Medicamento> read(Venda venda) {
+
+		Connection conexao = ConnectionFactory.getConnection();
+
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		List<Medicamento> medicamentos = new ArrayList<>();
+		try {
+			ps = conexao.prepareStatement("SELECT * from medicamentoVenda INNER JOIN medicamento ON medicamentoVenda.idMedicamento = medicamento.idMedicamento WHERE medicamentoVenda.idVenda=?");
+			ps.setInt(1, venda.getIdVenda());
+			rs = ps.executeQuery();
+			while (rs.next()) {
+				Medicamento medicamento = new Medicamento();
+				medicamento.setIdMedicamento(rs.getInt("medicamento.idMedicamento"));
+				medicamento.setLote(rs.getInt("medicamento.lote"));
+				medicamento.setNomeMedicamento(rs.getString("medicamento.nomeMedicamento"));
+				medicamento.setDescricaoMedicamento(rs.getString("medicamento.descricaoMedicamento"));
+				medicamento.setPrecoMedicamento(rs.getBigDecimal("medicamento.precoMedicamento"));
+				medicamento.setValidadeMedicamento(rs.getDate("medicamento.validadeMedicamento"));
+				Estoque estoque = new Estoque();
+				estoque.setQuantidade(rs.getInt("medicamentoVenda.quantidadeVendida"));
+				medicamento.setEstoque(estoque);
+				medicamentos.add(medicamento);
+			}
+
+		} catch (SQLException ex) {
+			throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				ps.close();
+				rs.close();
+			} catch (SQLException e) {
+				throw new DAOException(e.getMessage());
+			}
+		}
+		return medicamentos;
 	}
 }

@@ -2,21 +2,36 @@ package view;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JDialog;
+import javax.swing.JFormattedTextField;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import Auxiliares.JNumberFormatField;
+import Auxiliares.ValidaData;
+import Exception.DataDdMmYyyyInvalida;
+import Exception.DataDigitadaInvalidaException;
 import model.DAO.ClienteDAO;
+import model.DAO.MedicamentoDAO;
 import model.DAO.VendaDAO;
 import model.bean.Cliente;
+import model.bean.Medicamento;
 import model.bean.Venda;
 
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
+import java.math.BigDecimal;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 
 public class TelaConsultarVendas extends JInternalFrame {
@@ -159,7 +174,75 @@ public class TelaConsultarVendas extends JInternalFrame {
 		}
 	}
 	private void inicializaComponentesExpandir(JDialog dialog, Venda venda) {
-		// TODO Auto-generated method stub
+				
+		dialog.setTitle("Listando Medicamento da Venda");
+        dialog.setPreferredSize(new Dimension(800, 350));
+        dialog.pack();
+        dialog.setModal(true);
+        dialog.setFocusable(true);
+		dialog.setLayout(null);
+        try {
+			dialog.setIconImage(Toolkit.getDefaultToolkit().getImage("imagens/farmacia-icone.png"));
+        } catch (NullPointerException ex) {
+        	System.out.println("nao encontrou o icone");
+        }
+        
+        JPanel buttonPane = new JPanel();
+		buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		buttonPane.setBounds(100,100, 100, 100);
+        JPanel jPanelListar = new JPanel();
+        jPanelListar.setLayout(new BorderLayout());
+        jPanelListar.setBorder(new EmptyBorder(5, 5, 5, 5));
+        
+        jPanelListar.setBounds(0, 0, dialog.getWidth(), dialog.getHeight() - 30);
+         
+        JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(0, 48, 778, 180);
+		jPanelListar.add(scrollPane);
 		
+		JTable table = new JTable();
+		scrollPane.setViewportView(table);
+		table.setModel(new DefaultTableModel(new Object[][] {},
+				new String[] { "id Medicamento", "Nome medicamento", "Descrição Medicamento", "Preço Medicamento", "Quantidade"}) {
+			private static final long serialVersionUID = 7549926424366818036L;
+			boolean[] canEdit = new boolean[] { false, false, false, false,false};
+
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				return canEdit[columnIndex];
+			}
+		});
+		
+        DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+		modelo.getDataVector().removeAllElements();
+		modelo.fireTableDataChanged();
+		
+		MedicamentoDAO medicamentoDao = new MedicamentoDAO();
+		for (Medicamento m : medicamentoDao.read(venda)) {
+
+			modelo.addRow(new Object[] {
+					m.getIdMedicamento(),m.getNomeMedicamento(),m.getDescricaoMedicamento(), "R$ " + m.getPrecoMedicamento(),
+					m.getEstoque().getQuantidade()
+			});
+		}
+        
+		JLabel lblListando = new JLabel("Listando Medicamentos");
+		lblListando.setBounds(0, 120, 150, 30);
+		jPanelListar.add(lblListando);
+		
+		JButton cancelButton = new JButton("Cancel");
+		cancelButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dialog.dispose();
+			}
+		});
+		
+		buttonPane.add(cancelButton);
+		jPanelListar.add(buttonPane, BorderLayout.SOUTH);
+		dialog.add(jPanelListar,BorderLayout.CENTER);
+		
+        //Centralizando a dialog no centro da tela
+        java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        dialog.setLocation((int) (d.getWidth() - dialog.getWidth()) / 2, (int) (d.getHeight() - dialog.getHeight()) / 2);  
+        dialog.setVisible(true);
 	}	
 }
