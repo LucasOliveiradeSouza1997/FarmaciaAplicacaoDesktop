@@ -35,7 +35,6 @@ import Exception.DinheiroCaixaException;
 import Exception.DinheiroClienteException;
 import Exception.FormaDePagamentoException;
 import Exception.MedicamentoInvalidoException;
-import Exception.QuantidadeInvalidaEstoqueException;
 import Exception.QuantidadeInvalidaMedicamentoEstoqueException;
 import model.DAO.CaixaDAO;
 import model.DAO.CaixaDisponivelDAO;
@@ -59,7 +58,9 @@ public class TelaRealizarVenda extends JInternalFrame {
 	private JTable table;
 	private JDialog dialog = null;
 	List<VendaExibicao> vendaExibicao;
-
+	BigDecimal totalVenda;
+	JNumberFormatField txtTotal;
+	
 	public TelaRealizarVenda(Usuario usuario) {
 		setBounds(0, 0, 794, 550);
 		setClosable(true);
@@ -118,7 +119,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 		table = new JTable();
 		scrollPane.setViewportView(table);
 		table.setModel(new DefaultTableModel(new Object[][] {},
-				new String[] { "id", "lote", "Nome Medicamento", "Descrição", "Quantidade", "Preço" }) {
+				new String[] { "id", "lote", "Nome Medicamento", "Descrição", "Quantidade", "Valor Total" }) {
 			private static final long serialVersionUID = 7549926424366818036L;
 			boolean[] canEdit = new boolean[] { false, false, false, false, false, false };
 
@@ -132,7 +133,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 		lblTotal.setBounds(534, 401, 75, 30);
 		getContentPane().add(lblTotal);
 
-		JNumberFormatField txtTotal = new JNumberFormatField();
+		txtTotal = new JNumberFormatField();
 		txtTotal.setLimit(6);
 		txtTotal.setBounds(607, 401, 150, 30);
 		txtTotal.setEnabled(false);
@@ -153,10 +154,6 @@ public class TelaRealizarVenda extends JInternalFrame {
 					if (!(rdbtnCartao.isSelected() || rdbtnDinheiro.isSelected())) {
 						throw new FormaDePagamentoException("Não selecionou forma de pagamento");
 					}
-					String total = txtTotal.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".")
-							.replaceAll(" ", "");
-					// BigDecimal totalVenda = new BigDecimal(total);
-					BigDecimal totalVenda = new BigDecimal("10");
 					BigDecimal dinheiroCLiente = null;
 					BigDecimal troco = null;
 					Cliente cliente = new Cliente();
@@ -192,7 +189,6 @@ public class TelaRealizarVenda extends JInternalFrame {
 								throw new DinheiroClienteException("Valor Inválido Para o Dinheiro do Cliente");
 							}
 						}
-						System.out.println("aa" + dinheiroCLiente);
 						if (dinheiroCLiente.compareTo(totalVenda) < 0) {
 							throw new DinheiroClienteException("Dinheiro Insuficiente");
 						}
@@ -220,7 +216,6 @@ public class TelaRealizarVenda extends JInternalFrame {
 					dispose();
 					vendaExibicao = null;
 					if (troco != null) {
-						System.out.println(totalVenda.toString());
 						JOptionPane.showMessageDialog(null,
 								"Troco do Cliente: R$ " + troco.toString().replaceAll("[.]", ","));
 					}
@@ -282,11 +277,15 @@ public class TelaRealizarVenda extends JInternalFrame {
 		if (vendaExibicao == null) {
 			vendaExibicao = new ArrayList<VendaExibicao>();
 		}
+		totalVenda = new BigDecimal("0");
 		for (VendaExibicao ve : vendaExibicao) {
-
-			// modelo.addRow(new Object[] {
-			// m.getIdMedicamento(),m.getNomeMedicamento(),m.getDescricaoMedicamento(),
-			// "R$ "+ m.getPrecoMedicamento(),m.getValidadeMedicamentoToString()});
+			totalVenda = totalVenda.add(ve.getPreco());
+			txtTotal.setText(totalVenda.toString());
+			
+			modelo.addRow(new Object[] {
+			ve.getId(),ve.getLote(),ve.getNomeMedicamento(),ve.getDescricaoMedicamento(),
+			ve.getQuantidade(),ve.getPreco()
+			 });
 		}
 	}
 
@@ -337,7 +336,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 				comboBoxMedicamento.addItem(m.getNomeMedicamento());
 				medicamentosMap.put(i++, m.getIdMedicamento());
 			}
-			txtIdMedicamento.setText(Integer.toString(medicamentosMap.get(comboBoxCliente.getSelectedIndex())));
+			txtIdMedicamento.setText(Integer.toString(medicamentosMap.get(comboBoxMedicamento.getSelectedIndex())));
 		} catch (MedicamentoInvalidoException ex) {
 			dialog.dispose();
 			JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro ao Selecionar Medicamento",
@@ -348,7 +347,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if(txtIdMedicamento!=null) {
-						txtIdMedicamento.setText(Integer.toString(medicamentosMap.get(comboBoxCliente.getSelectedIndex())));
+						txtIdMedicamento.setText(Integer.toString(medicamentosMap.get(comboBoxMedicamento.getSelectedIndex())));
 					}
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -381,17 +380,28 @@ public class TelaRealizarVenda extends JInternalFrame {
 					int quantidadeUsuario = Integer.parseInt(txtQuantidade.getText());
 					MedicamentoDAO mDao = new MedicamentoDAO();
 					Medicamento medicamento = mDao.readMedicamentosNaoVencidosComEstoque(id);
-					System.out.println("id: "+medicamento.getIdMedicamento());
-					System.out.println("qnt estoque: "+medicamento.getEstoque().getQuantidade());
 					if(medicamento.getEstoque().getQuantidade() < quantidadeUsuario) {
 						throw new QuantidadeInvalidaMedicamentoEstoqueException("Não temos essa quantidade informada em estoque");
 					}
+					if(quantidadeUsuario <= 0) {
+						throw new QuantidadeInvalidaMedicamentoEstoqueException("Não informou a quantidade");
+					}
 					
-//					vendaExibicao;
+					VendaExibicao ve = new VendaExibicao();
+					ve.setId(medicamento.getIdMedicamento());
+					ve.setLote(medicamento.getLote());
+					ve.setNomeMedicamento(medicamento.getNomeMedicamento());
+					ve.setDescricaoMedicamento(medicamento.getDescricaoMedicamento());
+					BigDecimal precoMedicamentos = medicamento.getPrecoMedicamento().multiply(BigDecimal.valueOf(quantidadeUsuario));
+					precoMedicamentos = precoMedicamentos.setScale(2, BigDecimal.ROUND_HALF_EVEN);
+					ve.setPreco(precoMedicamentos);
+					ve.setQuantidade(quantidadeUsuario);
+					vendaExibicao.add(ve);
 				} catch (QuantidadeInvalidaMedicamentoEstoqueException ex) {
 					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro ao Selecionar Medicamento",
 							JOptionPane.ERROR_MESSAGE);
 				} catch (Exception ex2) {
+					ex2.printStackTrace();
 					JOptionPane.showMessageDialog(null, "Erro ao selecionar Medicamento:",
 							"Erro ao Selecionar Medicamento", JOptionPane.ERROR_MESSAGE);
 				}

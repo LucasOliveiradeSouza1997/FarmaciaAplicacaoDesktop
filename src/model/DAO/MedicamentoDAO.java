@@ -222,7 +222,7 @@ public class MedicamentoDAO {
 		boolean encontrouRegistros =false;
 		try {
 			ps = conexao.prepareStatement(
-					"SELECT medicamento.idMedicamento, medicamento.lote, medicamento.nomeMedicamento, estoque.quantidade, estoque.distribuidor from medicamento inner join estoque on medicamento.lote = estoque.lote WHERE estoque.quantidade > 0 AND medicamento.validadeMedicamento>= NOW() AND medicamento.idMedicamento=?");
+					"SELECT medicamento.idMedicamento, medicamento.descricaoMedicamento, medicamento.precoMedicamento,medicamento.lote, medicamento.nomeMedicamento, estoque.quantidade, estoque.distribuidor from medicamento inner join estoque on medicamento.lote = estoque.lote WHERE estoque.quantidade > 0 AND medicamento.validadeMedicamento>= NOW() AND medicamento.idMedicamento=?");
 			ps.setInt(1, idMedicamento);
 			rs = ps.executeQuery();
 			if (rs.next()) {
@@ -233,6 +233,8 @@ public class MedicamentoDAO {
 				medicamento.setIdMedicamento(rs.getInt("medicamento.idMedicamento"));
 				medicamento.setLote(rs.getInt("medicamento.lote"));
 				medicamento.setNomeMedicamento(rs.getString("medicamento.nomeMedicamento"));
+				medicamento.setDescricaoMedicamento(rs.getString("medicamento.descricaoMedicamento"));
+				medicamento.setPrecoMedicamento(rs.getBigDecimal("medicamento.precoMedicamento"));
 				estoque.setQuantidade(rs.getInt("estoque.quantidade"));
 				estoque.setDistribuidor(rs.getString("estoque.distribuidor"));
 				medicamento.setEstoque(estoque);
