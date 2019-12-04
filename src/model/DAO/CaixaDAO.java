@@ -12,6 +12,7 @@ import Exception.AberturaCaixaException;
 import Exception.DAOException;
 import model.bean.Caixa;
 import model.bean.CaixaDisponivel;
+import model.bean.Estoque;
 
 public class CaixaDAO {
 
@@ -159,6 +160,51 @@ public class CaixaDAO {
 				throw new DAOException(ex2.getMessage());
 			}
 		}
-		
+	}
+	
+	public void updateCaixaCartao(Caixa c) {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		try {
+			ps = conexao.prepareStatement("UPDATE caixa SET valorCartao=valorCartao+? WHERE idCaixa=?");
+			ps.setBigDecimal(1, c.getValorCartao());
+			ps.setInt(2, c.getIdCaixa());
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException ex) {
+            throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException ex2) {
+	            throw new DAOException(ex2.getMessage());
+			}
+		}
+	}
+	
+	public void updateCaixaDinheiro(Caixa c) {
+		Connection conexao = ConnectionFactory.getConnection();
+		PreparedStatement ps = null;
+		try {
+			ps = conexao.prepareStatement("UPDATE caixa SET valorDinheiro=valorDinheiro+? WHERE idCaixa=?");
+			ps.setBigDecimal(1, c.getValorDinheiro());
+			ps.setInt(2, c.getIdCaixa());
+			ps.executeUpdate();
+			ps.close();
+		} catch (SQLException ex) {
+            throw new DAOException(ex.getMessage());
+		} finally {
+			ConnectionFactory.closeConnection(conexao);
+			try {
+				if (ps != null) {
+					ps.close();
+				}
+			} catch (SQLException ex2) {
+	            throw new DAOException(ex2.getMessage());
+			}
+		}
 	}
 }

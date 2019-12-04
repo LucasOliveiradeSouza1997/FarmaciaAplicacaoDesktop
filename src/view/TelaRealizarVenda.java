@@ -223,15 +223,26 @@ public class TelaRealizarVenda extends JInternalFrame {
 					MedicamentoVenda mV = new MedicamentoVenda();
 					MedicamentoVendaDAO mVDao= new MedicamentoVendaDAO();
 					EstoqueDAO estoqueDao = new EstoqueDAO();
+					CaixaDAO cDao = new CaixaDAO();
 					for (VendaExibicao v : vendaExibicao) {
 						Estoque estoque = new Estoque();
+						Caixa c = new Caixa();
+						c.setIdCaixa(numeroCaixa);
 						estoque.setLote(v.getLote());
 						estoque.setQuantidade(v.getQuantidade());
 						mV.setIdMedicamento(v.getId());
 						mV.setIdVenda(idVenda);
 						mV.setQuantidadeVendida(v.getQuantidade());
 						mVDao.create(mV);
+						if (tipoPagamento.equals("C")) {
+							c.setValorCartao(v.getPreco());
+							cDao.updateCaixaCartao(c);
+						}else if (tipoPagamento.equals("D")) {
+							c.setValorDinheiro(v.getPreco());
+							cDao.updateCaixaDinheiro(c);
+						}
 						estoqueDao.updateEstoqueMenos(estoque);
+						
 					}
 					dispose();
 					vendaExibicao = null;
