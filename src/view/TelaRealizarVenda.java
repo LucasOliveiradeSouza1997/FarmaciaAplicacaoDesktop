@@ -17,7 +17,9 @@ import javax.swing.JRadioButton;
 import Auxiliares.GerarNotaFiscal;
 import Auxiliares.JNumberFormatField;
 import Exception.ClienteNaoEncontradoException;
+import Exception.DinheiroCaixaException;
 import Exception.DinheiroClienteException;
+import Exception.FechamentoCaixaException;
 import Exception.FormaDePagamentoException;
 import model.DAO.CaixaDAO;
 import model.DAO.CaixaDisponivelDAO;
@@ -110,36 +112,45 @@ public class TelaRealizarVenda extends JInternalFrame {
 					}
 					String total = txtTotal.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".")
 							.replaceAll(" ", "");
-					BigDecimal totalVenda = new BigDecimal(total);
+					 BigDecimal totalVenda = new BigDecimal(total);
 					BigDecimal dinheiroCLiente = null;
-					// regras do preço
+					BigDecimal troco = null;
+					// regras do preço(desconto)
 
 					if (rdbtnCartao.isSelected()) {
 						tipoPagamento = "C";
 					} else if (rdbtnDinheiro.isSelected()) {
-						boolean erroNoDinheiroCliente = false;
 						tipoPagamento = "D";
 						String dinheiroDoCliente = JOptionPane.showInputDialog("Digite o dinheiro dado pelo cliente:");
 						if (dinheiroDoCliente == null || dinheiroDoCliente.equals("")) {
-							erroNoDinheiroCliente = true;
+							throw new DinheiroClienteException("Valor Inválido Para o Dinheiro do Cliente");
 						} else {
-							dinheiroDoCliente = dinheiroDoCliente.replaceAll("R$", "").replaceAll(" ", "").replaceAll("[.]", "").replaceAll(",", ".");
+							dinheiroDoCliente = dinheiroDoCliente.replaceAll("R$", "").replaceAll(" ", "")
+									.replaceAll("[.]", "").replaceAll(",", ".");
 							try {
 								dinheiroCLiente = new BigDecimal(dinheiroDoCliente);
 								dinheiroCLiente = dinheiroCLiente.setScale(2, BigDecimal.ROUND_HALF_EVEN);
 							} catch (Exception ex) {
-								erroNoDinheiroCliente = true;
+								throw new DinheiroClienteException("Valor Inválido Para o Dinheiro do Cliente");
 							}
 						}
-						if (erroNoDinheiroCliente) {
-							throw new DinheiroClienteException("Valor Inválido Para o Dinheiro do Cliente");
+						System.out.println("aa"+ dinheiroCLiente);
+						if (dinheiroCLiente.compareTo(totalVenda) < 0) {
+							throw new DinheiroClienteException("Dinheiro Insuficiente");
 						}
+						troco = dinheiroCLiente.subtract(totalVenda);
 					} else {
 						throw new FormaDePagamentoException("Não selecionou forma de pagamento");
 					}
 					Caixa caixa = new Caixa();
 					CaixaDAO caixaDao = new CaixaDAO();
 					caixa = caixaDao.readCaixaAberto(numeroCaixa);
+
+					BigDecimal valorTotalEmCaixa = caixa.getValorInicial().add(caixa.getValorDinheiro());
+					if (valorTotalEmCaixa.compareTo(troco) < 0) {
+						throw new DinheiroCaixaException("Dinheiro Insuficiente no Caixa");
+					}
+
 					Cliente cliente = new Cliente();
 					ClienteDAO clienteDao = new ClienteDAO();
 					cliente = clienteDao.read(cpfCliente);
@@ -152,13 +163,17 @@ public class TelaRealizarVenda extends JInternalFrame {
 					VendaDAO vendaDao = new VendaDAO();
 					vendaDao.create(venda);
 					dispose();
+					if (troco != null) {
+						System.out.println(totalVenda.toString());
+						JOptionPane.showMessageDialog(null,
+								"Troco do Cliente: R$ " + troco.toString().replaceAll("[.]", ","));
+					}
 					JOptionPane.showMessageDialog(null, " Venda realizada com sucesso!");
 				} catch (NullPointerException ex) {
 					JOptionPane.showMessageDialog(null, "Numero do Caixa Nao Selecionado", "Erro na Venda",
 							JOptionPane.ERROR_MESSAGE);
-				} catch (FormaDePagamentoException | DinheiroClienteException ex) {
-					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro na Venda",
-							JOptionPane.ERROR_MESSAGE);
+				} catch (FormaDePagamentoException | DinheiroClienteException | DinheiroCaixaException ex) {
+					JOptionPane.showMessageDialog(null, ex.getMessage(), "Erro na Venda", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
