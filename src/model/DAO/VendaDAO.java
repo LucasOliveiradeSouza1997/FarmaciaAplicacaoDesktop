@@ -14,12 +14,13 @@ public class VendaDAO {
 		Connection conexao = ConnectionFactory.getConnection();
 		PreparedStatement ps = null;
 		try {
-			ps = conexao.prepareStatement("INSERT INTO venda(idCaixa,cpfCliente,numeroNotaFiscal,dataVenda,horaVenda,valorTotal,tipoPagamento)VALUES(?,?,?,CURDATE(),CURTIME(),?,?)");
+			ps = conexao.prepareStatement("INSERT INTO venda(idCaixa,cpfCliente,numeroNotaFiscal,dataVenda,horaVenda,valorTotal,tipoPagamento,compraAtiva)VALUES(?,?,?,CURDATE(),CURTIME(),?,?,?)");
 			ps.setInt(1, v.getCaixa().getIdCaixa());
 			ps.setString(2, v.getCliente().getCpfCliente());
 			ps.setString(3, v.getNumeroNotaFiscal());
 			ps.setBigDecimal(4, v.getValorTotal());
 			ps.setString(5, v.getTipoPagamento());
+			ps.setBoolean(6,v.isCompraAtiva());
 			ps.executeUpdate();
 		} catch (SQLException ex) {
 			throw new DAOException(ex.getMessage());

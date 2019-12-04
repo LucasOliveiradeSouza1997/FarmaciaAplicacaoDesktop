@@ -3,7 +3,9 @@ package view;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.ButtonGroup;
@@ -13,30 +15,36 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 
 import Auxiliares.GerarNotaFiscal;
 import Auxiliares.JNumberFormatField;
 import Exception.ClienteNaoEncontradoException;
 import Exception.DinheiroCaixaException;
 import Exception.DinheiroClienteException;
-import Exception.FechamentoCaixaException;
 import Exception.FormaDePagamentoException;
 import model.DAO.CaixaDAO;
 import model.DAO.CaixaDisponivelDAO;
 import model.DAO.ClienteDAO;
+import model.DAO.MedicamentoDAO;
 import model.DAO.VendaDAO;
 import model.bean.Caixa;
 import model.bean.CaixaDisponivel;
 import model.bean.Cliente;
+import model.bean.Medicamento;
 import model.bean.Usuario;
 import model.bean.Venda;
-import javax.swing.JTextField;
+import model.bean.VendaExibicao;
 
 public class TelaRealizarVenda extends JInternalFrame {
 
 	private static final long serialVersionUID = 5060553779977942399L;
 	JComboBox<Integer> comboBox;
 	JComboBox<String> comboBoxCliente;
+	private JTable table;
+	List<VendaExibicao> vendaExibicao;
 
 	public TelaRealizarVenda(Usuario usuario) {
 		setBounds(0, 0, 794, 550);
@@ -88,6 +96,23 @@ public class TelaRealizarVenda extends JInternalFrame {
 		buttonGroup.add(rdbtnDinheiro);
 		rdbtnDinheiro.setBounds(276, 85, 100, 30);
 		getContentPane().add(rdbtnDinheiro);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(0, 167, 768, 223);
+		getContentPane().add(scrollPane);
+		
+		table = new JTable();
+		scrollPane.setViewportView(table);
+		table.setModel(new DefaultTableModel(new Object[][] {},
+				new String[] { "id","lote","Nome Medicamento", "Descrição", "Quantidade","Preço" }) {
+			private static final long serialVersionUID = 7549926424366818036L;
+			boolean[] canEdit = new boolean[] { false, false, false, false, false,false };
+
+			public boolean isCellEditable(int rowIndex, int columnIndex) {
+				return canEdit[columnIndex];
+			}
+		});
+		atualizarTabelaMedicamentos();
 
 		JLabel lblTotal = new JLabel("Total");
 		lblTotal.setBounds(534, 401, 75, 30);
@@ -110,6 +135,9 @@ public class TelaRealizarVenda extends JInternalFrame {
 					cpfCliente = cpfCliente.replaceAll("[.]", "").replaceAll("-", "").replaceAll(" ", "");
 					if (cpfCliente.equals("")) {
 						throw new ClienteNaoEncontradoException("Não selecionou Cliente");
+					}
+					if(!(rdbtnCartao.isSelected() || rdbtnDinheiro.isSelected())){
+							throw new FormaDePagamentoException("Não selecionou forma de pagamento");
 					}
 					String total = txtTotal.getText().replace("R$", "").replaceAll("[.]", "").replaceAll(",", ".")
 							.replaceAll(" ", "");
@@ -153,8 +181,6 @@ public class TelaRealizarVenda extends JInternalFrame {
 							throw new DinheiroClienteException("Dinheiro Insuficiente");
 						}
 						troco = dinheiroCLiente.subtract(totalVenda);
-					} else {
-						throw new FormaDePagamentoException("Não selecionou forma de pagamento");
 					}
 					Caixa caixa = new Caixa();
 					CaixaDAO caixaDao = new CaixaDAO();
@@ -167,6 +193,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 						}
 					}
 					Venda venda = new Venda();
+					venda.setCompraAtiva(true);
 					venda.setCaixa(caixa);
 					venda.setCliente(cliente);
 					venda.setNumeroNotaFiscal(GerarNotaFiscal.geraNFe());
@@ -175,6 +202,7 @@ public class TelaRealizarVenda extends JInternalFrame {
 					VendaDAO vendaDao = new VendaDAO();
 					vendaDao.create(venda);
 					dispose();
+					vendaExibicao=null;
 					if (troco != null) {
 						System.out.println(totalVenda.toString());
 						JOptionPane.showMessageDialog(null,
@@ -206,4 +234,20 @@ public class TelaRealizarVenda extends JInternalFrame {
 			txtDesconto.setText("Os atendentes Não oferecem desconto");
 		}
 	}
+	
+	private void atualizarTabelaMedicamentos() {
+		DefaultTableModel modelo = (DefaultTableModel) table.getModel();
+		modelo.getDataVector().removeAllElements();
+		modelo.fireTableDataChanged();
+		
+		if(vendaExibicao == null) {
+			vendaExibicao = new ArrayList<VendaExibicao>();
+		}
+		for (VendaExibicao ve : vendaExibicao) {
+
+//			modelo.addRow(new Object[] { m.getIdMedicamento(),m.getNomeMedicamento(),m.getDescricaoMedicamento(),
+//					"R$ "+ m.getPrecoMedicamento(),m.getValidadeMedicamentoToString()});
+		}
+	}
+
 }

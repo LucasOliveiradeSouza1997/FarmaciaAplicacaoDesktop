@@ -14,6 +14,7 @@ public class Venda {
 	Time horaVenda;
 	BigDecimal valorTotal;
 	String tipoPagamento;
+	boolean compraAtiva;
 	public int getIdVenda() {
 		return idVenda;
 	}
@@ -61,5 +62,11 @@ public class Venda {
 	}
 	public void setTipoPagamento(String tipoPagamento) {
 		this.tipoPagamento = tipoPagamento;
+	}
+	public boolean isCompraAtiva() {
+		return compraAtiva;
+	}
+	public void setCompraAtiva(boolean compraAtiva) {
+		this.compraAtiva = compraAtiva;
 	}
 }
