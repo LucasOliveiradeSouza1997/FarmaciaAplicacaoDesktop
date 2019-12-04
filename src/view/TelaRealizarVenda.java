@@ -39,12 +39,16 @@ import Exception.QuantidadeInvalidaMedicamentoEstoqueException;
 import model.DAO.CaixaDAO;
 import model.DAO.CaixaDisponivelDAO;
 import model.DAO.ClienteDAO;
+import model.DAO.EstoqueDAO;
 import model.DAO.MedicamentoDAO;
+import model.DAO.MedicamentoVendaDAO;
 import model.DAO.VendaDAO;
 import model.bean.Caixa;
 import model.bean.CaixaDisponivel;
 import model.bean.Cliente;
+import model.bean.Estoque;
 import model.bean.Medicamento;
+import model.bean.MedicamentoVenda;
 import model.bean.Usuario;
 import model.bean.Venda;
 import model.bean.VendaExibicao;
@@ -154,6 +158,9 @@ public class TelaRealizarVenda extends JInternalFrame {
 					if (!(rdbtnCartao.isSelected() || rdbtnDinheiro.isSelected())) {
 						throw new FormaDePagamentoException("Não selecionou forma de pagamento");
 					}
+					if (totalVenda.compareTo(new BigDecimal("0")) <= 0) {
+						throw new DinheiroCaixaException("Valor da Compra Zerada");
+					}
 					BigDecimal dinheiroCLiente = null;
 					BigDecimal troco = null;
 					Cliente cliente = new Cliente();
@@ -212,7 +219,20 @@ public class TelaRealizarVenda extends JInternalFrame {
 					venda.setValorTotal(totalVenda);
 					venda.setTipoPagamento(tipoPagamento);
 					VendaDAO vendaDao = new VendaDAO();
-					vendaDao.create(venda);
+					int idVenda = vendaDao.create(venda);
+					MedicamentoVenda mV = new MedicamentoVenda();
+					MedicamentoVendaDAO mVDao= new MedicamentoVendaDAO();
+					EstoqueDAO estoqueDao = new EstoqueDAO();
+					for (VendaExibicao v : vendaExibicao) {
+						Estoque estoque = new Estoque();
+						estoque.setLote(v.getLote());
+						estoque.setQuantidade(v.getQuantidade());
+						mV.setIdMedicamento(v.getId());
+						mV.setIdVenda(idVenda);
+						mV.setQuantidadeVendida(v.getQuantidade());
+						mVDao.create(mV);
+						estoqueDao.updateEstoqueMenos(estoque);
+					}
 					dispose();
 					vendaExibicao = null;
 					if (troco != null) {
@@ -373,7 +393,6 @@ public class TelaRealizarVenda extends JInternalFrame {
 		JButton cancelButton = new JButton("Cancel");
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// quantidade invalida em estoque
 				try {
 					dialog.dispose();
 					int id = Integer.parseInt(txtIdMedicamento.getText());
